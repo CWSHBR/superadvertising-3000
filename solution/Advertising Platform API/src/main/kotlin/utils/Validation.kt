@@ -12,7 +12,6 @@ object Validation {
         pattern: String? = null,
         ignoreNull: Boolean = false
     ): Boolean {
-        println("$field : $lengthBounds")
         if (field == null) {
             return ignoreNull
         }
@@ -56,7 +55,6 @@ object Validation {
                      lengthStrBounds: IntRange? = null,
                      lengthListBounds: IntRange? = null,
                      ignoreNull: Boolean = false): Boolean {
-        println("$list : $lengthStrBounds")
         if (list == null){
             return ignoreNull
         }

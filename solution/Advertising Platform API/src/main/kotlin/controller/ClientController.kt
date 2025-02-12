@@ -7,6 +7,8 @@ import io.ktor.server.response.*
 import ru.cwshbr.database.crud.ClientsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
+import ru.cwshbr.models.rabbitmq.LocationMessageModel
+import ru.cwshbr.utils.Queueing
 import java.util.*
 
 class ClientController(val call: ApplicationCall) {
@@ -23,12 +25,18 @@ class ClientController(val call: ApplicationCall) {
 
         val clients = r.map { it.toClientModel() }
 
-        val (success, reason) = ClientsCRUD.createList(clients)
+        val (success, reason) = ClientsCRUD.createOrUpdateList(clients)
 
         if (!success){
-            call.respond(HttpStatusCode.Conflict, ErrorResponse(reason.toString()))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse(reason.toString()))
             return
         }
+
+        clients.forEach { Queueing.addToLocationQueue(
+            LocationMessageModel(
+                it.id.toString(),
+                it.location
+        )) }
 
         call.respond(HttpStatusCode.OK, r)
     }

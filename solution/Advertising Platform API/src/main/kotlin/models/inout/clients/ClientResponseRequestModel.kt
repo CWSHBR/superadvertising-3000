@@ -1,10 +1,12 @@
 package ru.cwshbr.models.inout.clients
 
+import kotlinx.serialization.Serializable
 import ru.cwshbr.models.ClientModel
 import ru.cwshbr.models.enums.Gender
 import ru.cwshbr.utils.Validation
 import java.util.*
 
+@Serializable
 data class ClientResponseRequestModel(
     val client_id: String? = null,
     val login: String? = null,

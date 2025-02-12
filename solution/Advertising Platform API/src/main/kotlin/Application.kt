@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.jetbrains.exposed.sql.Database
+import ru.cwshbr.plugins.configureRabbitMQ
 import ru.cwshbr.plugins.configureRouting
 import ru.cwshbr.plugins.configureSerialization
 import ru.cwshbr.utils.POSTGRES_PASSWORD
@@ -28,6 +29,7 @@ fun Application.module() {
     }
     DatabaseInit.initialize()
     configureSerialization()
+    configureRabbitMQ()
     configureRouting()
 }
 

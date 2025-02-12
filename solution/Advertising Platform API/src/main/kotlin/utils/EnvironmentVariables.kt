@@ -8,4 +8,5 @@ val POSTGRES_URL = System.getenv("POSTGRES_URL")
 val POSTGRES_USERNAME = System.getenv("POSTGRES_USERNAME")
 val POSTGRES_PASSWORD = System.getenv("POSTGRES_PASSWORD")
 
-
+//Queue
+val RABBITMQ_URL = System.getenv("RABBITMQ_URL")
