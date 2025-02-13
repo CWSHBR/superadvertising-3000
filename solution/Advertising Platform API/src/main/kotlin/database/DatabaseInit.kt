@@ -8,7 +8,10 @@ import ru.cwshbr.database.tables.*
 object DatabaseInit {
     private val tables: List<Table> =
         listOf(
-            ClientsTable
+            ClientsTable,
+            AdvertisersTable,
+            CampaignsTable,
+            CampaignTargetTable
         )
 
     fun initialize() {
