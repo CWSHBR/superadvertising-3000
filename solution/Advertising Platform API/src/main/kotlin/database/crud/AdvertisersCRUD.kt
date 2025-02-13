@@ -1,14 +1,12 @@
 package ru.cwshbr.database.crud
 
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import ru.cwshbr.database.tables.AdvertisersTable
+import ru.cwshbr.database.tables.MLScoresTable
 import ru.cwshbr.models.AdvertiserModel
-import java.util.UUID
+import java.util.*
 
 object AdvertisersCRUD {
     private fun resultRowToAdvertiser(row: ResultRow) =
@@ -52,5 +50,39 @@ object AdvertisersCRUD {
         }
 
         return Pair(true, null)
+    }
+
+    fun getMlScore(advertiserId: UUID, clientId: UUID)= transaction {
+        MLScoresTable.select(MLScoresTable.score)
+            .where { (MLScoresTable.advertiserId eq advertiserId) and
+                    (MLScoresTable.clientId eq clientId) }
+            .singleOrNull()
+            .let { if (it == null) null else it[MLScoresTable.score] }
+    }
+
+    fun updateMlScore(advertiserId: UUID,
+                      clientId: UUID,
+                      score: Int): Pair<Boolean, String?>  {
+        try {
+            transaction {
+                if (getMlScore(advertiserId, clientId) == null) {
+                    MLScoresTable.insert {
+                        it[MLScoresTable.advertiserId] = advertiserId
+                        it[MLScoresTable.clientId] = clientId
+                        it[MLScoresTable.score] = score
+                    }
+                } else {
+                    MLScoresTable.update({ (MLScoresTable.advertiserId eq advertiserId) and
+                            (MLScoresTable.clientId eq clientId) }) {
+                        it[MLScoresTable.score] = score
+                    }
+                }
+            }
+        } catch (e: ExposedSQLException){
+            return Pair(false, e.message)
+        }
+
+        return Pair(true, null)
+
     }
 }

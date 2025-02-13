@@ -28,7 +28,7 @@ class ClientController(val call: ApplicationCall) {
         val (success, reason) = ClientsCRUD.createOrUpdateList(clients)
 
         if (!success){
-            call.respond(HttpStatusCode.NotFound, ErrorResponse(reason.toString()))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse(reason.toString())) //todo do not show reason
             return
         }
 
@@ -38,7 +38,7 @@ class ClientController(val call: ApplicationCall) {
                 it.location
         )) }
 
-        call.respond(HttpStatusCode.OK, r) // TODO GET ONLY UNIQUE LAST CHANGES
+        call.respond(HttpStatusCode.Created, r) // TODO GET ONLY UNIQUE LAST CHANGES
     }
 
     suspend fun getClientById(){
