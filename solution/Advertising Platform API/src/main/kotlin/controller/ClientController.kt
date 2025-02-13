@@ -8,7 +8,7 @@ import ru.cwshbr.database.crud.ClientsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
 import ru.cwshbr.models.rabbitmq.LocationMessageModel
-import ru.cwshbr.utils.Queueing
+import ru.cwshbr.plugins.addToLocationQueue
 import java.util.*
 
 class ClientController(val call: ApplicationCall) {
@@ -32,13 +32,13 @@ class ClientController(val call: ApplicationCall) {
             return
         }
 
-        clients.forEach { Queueing.addToLocationQueue(
+        clients.forEach { addToLocationQueue(
             LocationMessageModel(
                 it.id.toString(),
                 it.location
         )) }
 
-        call.respond(HttpStatusCode.OK, r)
+        call.respond(HttpStatusCode.OK, r) // TODO GET ONLY UNIQUE LAST CHANGES
     }
 
     suspend fun getClientById(){
