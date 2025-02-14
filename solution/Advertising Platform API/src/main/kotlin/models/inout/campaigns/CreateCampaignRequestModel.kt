@@ -18,14 +18,14 @@ data class CreateCampaignRequestModel(
     val ad_text: String,
     val start_date: Int,
     val end_date: Int,
-    val target: TargetResponseModel
+    val targeting: TargetResponseModel
 ) {
     fun validate(): Boolean {
         val validSet = setOf(
-            Validation.validateField(ad_text, 1..63),
+            Validation.validateField(ad_title, 1..63),
             Validation.validateField(ad_text, 1..255),
-            Validation.validateEnum(target.gender, listOf("MALE", "FEMALE", "ALL"), true),
-            Validation.validateField(target.location, 1..128, ignoreNull = true),
+            Validation.validateEnum(targeting.gender, listOf("MALE", "FEMALE", "ALL"), true),
+            Validation.validateField(targeting.location, 1..128, ignoreNull = true),
             CurrentDate >= start_date,
             CurrentDate <= end_date
         )
@@ -53,10 +53,10 @@ data class CreateCampaignRequestModel(
             start_date,
             end_date,
             CampaignTarget(
-                toGender(target.gender),
-                target.age_from,
-                target.age_to,
-                target.location
+                toGender(targeting.gender),
+                targeting.age_from,
+                targeting.age_to,
+                targeting.location
             )
         )
 }

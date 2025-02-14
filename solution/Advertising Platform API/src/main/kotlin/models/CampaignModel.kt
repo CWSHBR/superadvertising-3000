@@ -2,6 +2,7 @@ package ru.cwshbr.models
 
 import ru.cwshbr.models.inout.campaigns.GetCampaignResponseModel
 import ru.cwshbr.models.inout.campaigns.TargetResponseModel
+import ru.cwshbr.utils.CurrentDate
 import java.util.UUID
 
 data class CampaignModel(
@@ -36,4 +37,6 @@ data class CampaignModel(
                 target.location
             )
         )
+
+    fun isCampaignStarted() = CurrentDate >= startDate
 }

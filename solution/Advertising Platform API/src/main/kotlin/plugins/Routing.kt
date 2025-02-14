@@ -42,7 +42,7 @@ fun Application.configureRouting() {
                                 CampaignController(call).getCampaignById()
                             }
                             put {
-
+                                CampaignController(call).updateCampaign()
                             }
                             delete {
                                 CampaignController(call).deleteCampaign()

@@ -14,5 +14,5 @@ data class GetCampaignResponseModel(
     val ad_text: String,
     val start_date: Int,
     val end_date: Int,
-    val target: TargetResponseModel
+    val targeting: TargetResponseModel
 )

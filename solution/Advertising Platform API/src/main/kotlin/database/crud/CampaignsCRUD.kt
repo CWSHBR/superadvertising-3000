@@ -10,7 +10,7 @@ import ru.cwshbr.models.CampaignTarget
 import java.util.*
 
 object CampaignsCRUD {
-    fun resultRowToCampaign(resultRow: ResultRow) =
+    private fun resultRowToCampaign(resultRow: ResultRow) =
         CampaignModel(
             resultRow[CampaignsTable.id].value,
             resultRow[CampaignsTable.advertiserId].value,
@@ -77,7 +77,30 @@ object CampaignsCRUD {
             .map (::resultRowToCampaign)
     }
 
-    //todo UPDATE
+    fun update(campaign: CampaignModel) = transaction {
+        try {
+            CampaignsTable.update({ CampaignsTable.id eq campaign.id }) {
+                it[impressionsLimit] = campaign.impressionsLimit
+                it[clicksLimit] = campaign.clicksLimit
+                it[costPerImpression] = campaign.costPerImpression
+                it[costPerClick] = campaign.costPerClick
+                it[adTitle] = campaign.adTitle
+                it[adText] = campaign.adText
+                it[startDate] = campaign.startDate
+                it[endDate] = campaign.endDate
+            }
+
+            CampaignTargetTable.update({ CampaignTargetTable.campaignId eq campaign.id }) {
+                it[gender] = campaign.target.gender
+                it[ageFrom] = campaign.target.ageFrom
+                it[ageTo] = campaign.target.ageTo
+                it[location] = campaign.target.location
+            }
+            Pair(true, null)
+        } catch (e: Exception) {
+            Pair(true, e.message)
+        }
+    }
 
     fun delete(campaignId: UUID) = transaction {
         CampaignsTable.deleteWhere { id eq campaignId }
