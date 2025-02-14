@@ -52,9 +52,9 @@ object CampaignsCRUD {
                 it[ageTo] = campaign.target.ageTo
                 it[location] = campaign.target.location
             }
-            true
+            Pair(true, null)
         } catch (e: Exception) {
-            false
+            Pair(false, e.message)
         }
     }
 
@@ -80,6 +80,6 @@ object CampaignsCRUD {
     //todo UPDATE
 
     fun delete(campaignId: UUID) = transaction {
-        CampaignsTable.deleteWhere { CampaignsTable.id eq campaignId }
+        CampaignsTable.deleteWhere { id eq campaignId }
     }
 }

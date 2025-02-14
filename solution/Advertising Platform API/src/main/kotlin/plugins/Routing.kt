@@ -3,6 +3,7 @@ package ru.cwshbr.plugins
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import ru.cwshbr.controller.AdvertiserController
+import ru.cwshbr.controller.CampaignController
 import ru.cwshbr.controller.ClientController
 import ru.cwshbr.controller.TimeController
 
@@ -23,8 +24,31 @@ fun Application.configureRouting() {
             }
 
             route("/advertisers"){
-                get("/{advertiserId}"){
-                    AdvertiserController(call).getAdvertiser()
+                route("/{advertiserId}"){
+                    get{
+                        AdvertiserController(call).getAdvertiser()
+                    }
+
+                    route("/campaigns"){
+                        post {
+                            CampaignController(call).createCampaign()
+                        }
+                        get {
+                            CampaignController(call).getListOfCampaigns()
+                        }
+
+                        route("/{campaignId}"){
+                            get {
+                                CampaignController(call).getCampaignById()
+                            }
+                            put {
+
+                            }
+                            delete {
+                                CampaignController(call).deleteCampaign()
+                            }
+                        }
+                    }
                 }
 
                 post("/bulk") {

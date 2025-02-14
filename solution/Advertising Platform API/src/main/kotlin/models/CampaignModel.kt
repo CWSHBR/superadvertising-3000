@@ -1,5 +1,7 @@
 package ru.cwshbr.models
 
+import ru.cwshbr.models.inout.campaigns.GetCampaignResponseModel
+import ru.cwshbr.models.inout.campaigns.TargetResponseModel
 import java.util.UUID
 
 data class CampaignModel(
@@ -14,4 +16,24 @@ data class CampaignModel(
     val startDate: Int,
     val endDate: Int,
     val target: CampaignTarget
-)
+) {
+    fun toResponseModel() =
+        GetCampaignResponseModel(
+            id.toString(),
+            advertiserId.toString(),
+            impressionsLimit,
+            clicksLimit,
+            costPerImpression,
+            costPerClick,
+            adTitle,
+            adText,
+            startDate,
+            endDate,
+            TargetResponseModel(
+                target.gender.toString(),
+                target.ageFrom,
+                target.ageTo,
+                target.location
+            )
+        )
+}
