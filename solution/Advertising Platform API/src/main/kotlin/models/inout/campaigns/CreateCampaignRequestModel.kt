@@ -26,8 +26,9 @@ data class CreateCampaignRequestModel(
             Validation.validateField(ad_text, 1..255),
             Validation.validateEnum(targeting.gender, listOf("MALE", "FEMALE", "ALL"), true),
             Validation.validateField(targeting.location, 1..128, ignoreNull = true),
-            CurrentDate >= start_date,
-            CurrentDate <= end_date
+            CurrentDate <= start_date,
+            CurrentDate <= end_date,
+            start_date <= end_date
         )
 
         return false !in validSet

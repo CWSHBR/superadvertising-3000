@@ -64,7 +64,7 @@ data class UpdateCampaignRequestModel(
         } else oldCampaign.adText
 
         val sd = if (json.containsKey("start_date")) {
-            if (start_date == null || oldCampaign.isCampaignStarted() || CurrentDate < start_date) return null
+            if (start_date == null || oldCampaign.isCampaignStarted() || CurrentDate > start_date) return null
             start_date
         } else oldCampaign.startDate
 
@@ -73,15 +73,17 @@ data class UpdateCampaignRequestModel(
             end_date
         } else oldCampaign.endDate
 
-        val t = if (json.containsKey("targeting") && targeting != null) {
+        val t = if (json.containsKey("targeting")) {
+            if (targeting == null) null
+            else{
+                val jsTarget = json["targeting"]!!.jsonObject
+                val g = if (jsTarget.containsKey("gender")) toGender(targeting.gender) else oldCampaign.target?.gender
+                val af = if (jsTarget.containsKey("age_from")) targeting.age_from else oldCampaign.target?.ageFrom
+                val at = if (jsTarget.containsKey("age_to")) targeting.age_to else oldCampaign.target?.ageTo
+                val l = if(jsTarget.containsKey("location")) targeting.location else oldCampaign.target?.location
 
-            val jsTarget = json["targeting"]!!.jsonObject
-            val g = if (jsTarget.containsKey("gender")) toGender(targeting.gender) else oldCampaign.target.gender
-            val af = if (jsTarget.containsKey("age_from")) targeting.age_from else oldCampaign.target.ageFrom
-            val at = if (jsTarget.containsKey("age_to")) targeting.age_to else oldCampaign.target.ageTo
-            val l = if(jsTarget.containsKey("location")) targeting.location else oldCampaign.target.location
-
-            CampaignTarget(g, af, at, l)
+                CampaignTarget(g, af, at, l)
+            }
 
         } else oldCampaign.target
 

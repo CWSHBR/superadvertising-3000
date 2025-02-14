@@ -10,6 +10,7 @@ object DatabaseInit {
         listOf(
             ClientsTable,
             AdvertisersTable,
+            MLScoresTable,
             CampaignsTable,
             CampaignTargetTable
         )

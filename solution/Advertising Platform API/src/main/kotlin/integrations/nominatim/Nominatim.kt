@@ -8,12 +8,13 @@ import ru.cwshbr.models.integrations.nominatim.Position
 import ru.cwshbr.utils.client
 
 object Nominatim {
-    val endpoint = "https://nominatim.openstreetmap.org/search"
+    private const val endpoint = "https://nominatim.openstreetmap.org/search"
 
     private suspend fun sendRequest (placeName: String): GetPlaceDataModel? {
         val places = try {
             val response = client.get(endpoint) {
                 parameter("q", placeName)
+                parameter("accept-language", "ru")
                 parameter("format", "json")
                 parameter("limit", 1)
             }

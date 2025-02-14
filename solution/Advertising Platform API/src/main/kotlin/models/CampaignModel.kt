@@ -16,7 +16,7 @@ data class CampaignModel(
     val adText: String,
     val startDate: Int,
     val endDate: Int,
-    val target: CampaignTarget
+    val target: CampaignTarget?
 ) {
     fun toResponseModel() =
         GetCampaignResponseModel(
@@ -31,10 +31,10 @@ data class CampaignModel(
             startDate,
             endDate,
             TargetResponseModel(
-                target.gender.toString(),
-                target.ageFrom,
-                target.ageTo,
-                target.location
+                target?.gender.toString(),
+                target?.ageFrom,
+                target?.ageTo,
+                target?.location
             )
         )
 

@@ -10,7 +10,9 @@ import ru.cwshbr.database.crud.CampaignsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
+import ru.cwshbr.models.rabbitmq.LocationMessageModel
 import ru.cwshbr.plugins.JsonFormat
+import ru.cwshbr.plugins.addToLocationQueue
 import java.util.*
 
 class CampaignController(val call: ApplicationCall) {
@@ -79,6 +81,14 @@ class CampaignController(val call: ApplicationCall) {
             return
         }
 
+        if (updatedModel.target?.location != null) addToLocationQueue(
+            LocationMessageModel(
+                updatedModel.id.toString(),
+                updatedModel.target.location,
+                true
+            )
+        )
+
         call.respond(HttpStatusCode.OK, updatedModel.toResponseModel())
 
 
@@ -138,6 +148,14 @@ class CampaignController(val call: ApplicationCall) {
             call.respond(HttpStatusCode.BadRequest, reason.toString()) // todo do not request reason
             return
         }
+
+        if (campaign.target?.location != null) addToLocationQueue(
+            LocationMessageModel(
+                campaign.id.toString(),
+                campaign.target.location,
+                true
+            )
+        )
 
         call.respond(HttpStatusCode.Created, campaign.toResponseModel())
     }
