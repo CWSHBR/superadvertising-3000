@@ -10,3 +10,5 @@
 применение постгреса, rabbitmq
 
 в /advertisers/{advertiserId}/campaigns page с нуля
+
+при удалении кампании, стата не меняется

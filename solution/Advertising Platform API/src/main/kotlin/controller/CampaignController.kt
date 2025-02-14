@@ -7,6 +7,7 @@ import io.ktor.server.response.*
 import kotlinx.serialization.json.jsonObject
 import ru.cwshbr.database.crud.AdvertisersCRUD
 import ru.cwshbr.database.crud.CampaignsCRUD
+import ru.cwshbr.database.crud.ClientsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
@@ -185,5 +186,32 @@ class CampaignController(val call: ApplicationCall) {
         CampaignsCRUD.delete(campaignId)
 
         call.respond(HttpStatusCode.NoContent)
+    }
+
+    suspend fun getAd(){
+        val clientId = try {
+            UUID.fromString(call.parameters["client_id"].toString())
+        } catch (e: Exception){
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Bad client_id"))
+            return
+        }
+
+        val client = ClientsCRUD.read(clientId)
+
+        if (client == null) {
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Client not found"))
+            return
+        }
+
+        val ad = CampaignsCRUD.getAd(clientId)?.toClientAdModel()
+
+        if (ad == null) {
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Ad not found"))
+            return
+        }
+
+        //todo add createImpression()
+
+        call.respond(HttpStatusCode.OK, ad)
     }
 }

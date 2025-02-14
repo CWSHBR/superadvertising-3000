@@ -59,6 +59,10 @@ fun Application.configureRouting() {
             post("/ml-scores"){
                 AdvertiserController(call).updateMlScore()
             }
+
+            post("/ads") {
+                CampaignController(call).getAd()
+            }
         }
     }
 }

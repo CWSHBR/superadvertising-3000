@@ -1,5 +1,6 @@
 package ru.cwshbr.models
 
+import ru.cwshbr.models.inout.campaigns.GetAdResponseModel
 import ru.cwshbr.models.inout.campaigns.GetCampaignResponseModel
 import ru.cwshbr.models.inout.campaigns.TargetResponseModel
 import ru.cwshbr.utils.CurrentDate
@@ -39,4 +40,12 @@ data class CampaignModel(
         )
 
     fun isCampaignStarted() = CurrentDate >= startDate
+
+    fun toClientAdModel() = GetAdResponseModel(
+        id.toString(),
+        adTitle,
+        adText,
+        advertiserId.toString()
+
+    )
 }

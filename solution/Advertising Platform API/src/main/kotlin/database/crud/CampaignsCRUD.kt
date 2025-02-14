@@ -1,5 +1,6 @@
 package ru.cwshbr.database.crud
 
+import database.getBestAdStatement
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -8,6 +9,7 @@ import ru.cwshbr.database.tables.CampaignsTable
 import ru.cwshbr.models.CampaignModel
 import ru.cwshbr.models.CampaignTarget
 import ru.cwshbr.models.integrations.nominatim.BoundingBox
+import ru.cwshbr.utils.CurrentDate
 import java.util.*
 
 object CampaignsCRUD {
@@ -32,7 +34,7 @@ object CampaignsCRUD {
         )
 
     fun create(campaign: CampaignModel) = transaction {
-        try{
+        try {
             CampaignsTable.insert {
                 it[id] = campaign.id
                 it[advertiserId] = campaign.advertiserId
@@ -64,16 +66,18 @@ object CampaignsCRUD {
             .selectAll()
             .where { CampaignsTable.id eq campaignId }
             .singleOrNull()
-            .let { if (it == null) null
-            else resultRowToCampaign(it) }
+            .let {
+                if (it == null) null
+                else resultRowToCampaign(it)
+            }
     }
 
     fun readByAdvertiserId(advertiserId: UUID, size: Int, page: Int) = transaction {
         (CampaignsTable innerJoin CampaignTargetTable)
             .selectAll()
             .where { CampaignsTable.advertiserId eq advertiserId }
-            .limit(size).offset(size*page.toLong())
-            .map (::resultRowToCampaign)
+            .limit(size).offset(size * page.toLong())
+            .map(::resultRowToCampaign)
     }
 
     fun update(campaign: CampaignModel) = transaction {
@@ -117,4 +121,32 @@ object CampaignsCRUD {
     fun delete(campaignId: UUID) = transaction {
         CampaignsTable.deleteWhere { id eq campaignId }
     }
+
+    fun getAd(clientId: UUID): CampaignModel? =
+        transaction {
+            val i = exec(String.format(getBestAdStatement, CurrentDate, CurrentDate, clientId.toString())) { rs ->
+                val result = arrayListOf<String>()
+                while (rs.next()) {
+                    result += rs.getString("cid")
+                }
+                result
+            }
+
+
+            if (i.isNullOrEmpty()) {
+                return@transaction null
+            } else {
+                val campaignId = UUID.fromString(i.first())
+                return@transaction (CampaignsTable innerJoin CampaignTargetTable)
+                    .selectAll()
+                    .where { CampaignsTable.id eq campaignId }
+                    .singleOrNull()
+                    .let {
+                        if (it == null) null
+                        else resultRowToCampaign(it)
+                    }
+            }
+
+
+        }
 }
