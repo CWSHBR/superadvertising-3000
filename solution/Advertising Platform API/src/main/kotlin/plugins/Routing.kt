@@ -2,10 +2,7 @@ package ru.cwshbr.plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-import ru.cwshbr.controller.AdvertiserController
-import ru.cwshbr.controller.CampaignController
-import ru.cwshbr.controller.ClientController
-import ru.cwshbr.controller.TimeController
+import ru.cwshbr.controller.*
 
 fun Application.configureRouting() {
     routing {
@@ -72,18 +69,18 @@ fun Application.configureRouting() {
             route("/stats"){
                 route("/campaigns/{campaignId}") {
                     get{
-
+                        StatisticsController(call).getCampaignStats()
                     }
                     get("/daily") {
-
+                        StatisticsController(call).getCampaignDailyStats()
                     }
                 }
                 route("/advertisers/{advertiserId}/campaigns") {
                     get {
-
+                        StatisticsController(call).getAdvertiserStats()
                     }
                     get("/daily") {
-
+                        StatisticsController(call).getAdvertiserDailyStats()
                     }
                 }
             }

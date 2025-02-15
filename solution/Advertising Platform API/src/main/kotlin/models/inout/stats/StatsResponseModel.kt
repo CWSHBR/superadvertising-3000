@@ -10,4 +10,15 @@ data class StatsResponseModel(
     val spent_impressions: Float,
     val spent_clicks: Float,
     val spent_total: Float,
-)
+) {
+    fun toDaily(date: Int) =
+        DailyStatsResponseModel(
+            impressions_count,
+            click_count,
+            conversion,
+            spent_impressions,
+            spent_clicks,
+            spent_total,
+            date
+        )
+}
