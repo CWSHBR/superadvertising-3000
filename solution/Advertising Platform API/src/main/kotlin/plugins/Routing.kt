@@ -60,9 +60,34 @@ fun Application.configureRouting() {
                 AdvertiserController(call).updateMlScore()
             }
 
-            post("/ads") {
-                CampaignController(call).getAd()
+            route("/ads") {
+                get{
+                    CampaignController(call).getAd()
+                }
+                post("/{adId}/click") {
+                    CampaignController(call).clickAd()
+                }
             }
+
+            route("/stats"){
+                route("/campaigns/{campaignId}") {
+                    get{
+
+                    }
+                    get("/daily") {
+
+                    }
+                }
+                route("/advertisers/{advertiserId}/campaigns") {
+                    get {
+
+                    }
+                    get("/daily") {
+
+                    }
+                }
+            }
+
         }
     }
 }

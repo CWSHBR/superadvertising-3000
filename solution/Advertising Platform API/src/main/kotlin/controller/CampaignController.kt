@@ -8,9 +8,11 @@ import kotlinx.serialization.json.jsonObject
 import ru.cwshbr.database.crud.AdvertisersCRUD
 import ru.cwshbr.database.crud.CampaignsCRUD
 import ru.cwshbr.database.crud.ClientsCRUD
+import ru.cwshbr.database.crud.StatisticsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
+import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
 import ru.cwshbr.models.rabbitmq.LocationMessageModel
 import ru.cwshbr.plugins.JsonFormat
 import ru.cwshbr.plugins.addToLocationQueue
@@ -203,15 +205,42 @@ class CampaignController(val call: ApplicationCall) {
             return
         }
 
-        val ad = CampaignsCRUD.getAd(clientId)?.toClientAdModel()
+        val ad = CampaignsCRUD.getAd(clientId)
 
         if (ad == null) {
             call.respond(HttpStatusCode.NotFound, ErrorResponse("Ad not found"))
             return
         }
 
-        //todo add createImpression()
+        StatisticsCRUD.createImpression(ad, clientId)
 
-        call.respond(HttpStatusCode.OK, ad)
+        call.respond(HttpStatusCode.OK, ad.toClientAdModel())
+    }
+
+    suspend fun clickAd(){
+        val adId = try {
+            UUID.fromString(call.parameters["adId"].toString())
+        } catch (e: Exception){
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Bad adId"))
+            return
+        }
+
+        val clientId = try {
+            UUID.fromString(call.receive<ClientResponseRequestModel>().client_id)
+        } catch (e: Exception){
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Bad client_id"))
+            return
+        }
+
+        if(!StatisticsCRUD.impressionExists(adId, clientId)){
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Не было просмотра рекламы"))
+            return
+        }
+
+        val campaign = CampaignsCRUD.read(adId)!!
+
+        StatisticsCRUD.createClick(campaign, clientId)
+
+        call.respond(HttpStatusCode.NoContent)
     }
 }
