@@ -74,9 +74,9 @@ val createFunctionsStatement = """
 
 """.trimIndent()
 
-val getBestAdStatement = """
+val getBestAdStatement = """ 
     select cid,
-           (0.5+(cpi * 0.5 + cpc * 0.5)) * (0.5+(loc + af + at + gen) /4.0) * (0.5 + ml) AS score from
+           ((cpi * 0.8 + cpc * 0.4) + loc + af + at + gen + ml/2) AS score from
     (
     select campaigns.id as cid,
            is_within_area(c.latitude, c.longitude,
@@ -96,4 +96,4 @@ val getBestAdStatement = """
     and c.id = '%S'
     ) as subquery
      order by score DESC, ml DESC, cpi DESC limit 1
-""".trimIndent()
+""".trimIndent() //todo fix ml_scores missings

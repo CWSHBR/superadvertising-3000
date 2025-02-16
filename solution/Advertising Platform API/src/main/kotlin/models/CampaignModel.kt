@@ -32,7 +32,7 @@ data class CampaignModel(
             startDate,
             endDate,
             TargetResponseModel(
-                target?.gender.toString(),
+                target?.gender.let { it?.toString() },
                 target?.ageFrom,
                 target?.ageTo,
                 target?.location

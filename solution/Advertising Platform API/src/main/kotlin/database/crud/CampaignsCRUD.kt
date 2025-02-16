@@ -124,7 +124,9 @@ object CampaignsCRUD {
 
     fun getAd(clientId: UUID): CampaignModel? =
         transaction {
-            val i = exec(String.format(getBestAdStatement, CurrentDate, CurrentDate, clientId.toString())) { rs ->
+            val statement = String.format(getBestAdStatement, CurrentDate, CurrentDate, clientId.toString())
+            println(statement)
+            val i = exec(statement) { rs ->
                 val result = arrayListOf<String>()
                 while (rs.next()) {
                     result += rs.getString("cid")

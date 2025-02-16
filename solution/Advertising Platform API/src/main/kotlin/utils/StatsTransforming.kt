@@ -13,7 +13,7 @@ object StatsTransforming {
         val clCost = clck?.costSum ?: 0f
 
         val conversion = if (impressions == 0) 0f
-        else clicks/(impressions.toFloat())
+        else clicks/(impressions.toFloat()) * 100
 
         return StatsResponseModel(
             impressions,
@@ -28,7 +28,7 @@ object StatsTransforming {
     fun toDailyStatsList(impr: Map<Int, StatisticModel>, clck: Map<Int, StatisticModel>): List<DailyStatsResponseModel> {
         val dates = impr.keys + clck.keys
 
-        val dailyStats = dates.sortedDescending().map {
+        val dailyStats = dates.sorted().map {
             toStatsResponseModel(impr[it], clck[it]).toDaily(it)
         }
         return dailyStats
