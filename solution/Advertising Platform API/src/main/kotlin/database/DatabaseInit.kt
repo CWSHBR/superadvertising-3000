@@ -28,16 +28,17 @@ object DatabaseInit {
 }
 
 val createFunctionsStatement = """
-    CREATE OR REPLACE FUNCTION is_within_area(user_lat DOUBLE PRECISION, user_lon DOUBLE PRECISION, latA DOUBLE PRECISION, latB DOUBLE PRECISION, lonA DOUBLE PRECISION, lonB DOUBLE PRECISION)
-        RETURNS INTEGER AS ${'$'}${'$'}
+    CREATE OR REPLACE FUNCTION is_within_area(loc text, clientloc text) returns integer
+    as
+    ${'$'}${'$'}
     BEGIN
-        IF user_lat BETWEEN latA AND latB AND user_lon BETWEEN lonA AND lonB THEN
+        IF clientLoc is null OR lower(loc) = lower(clientLoc) then
             RETURN 1;
         ELSE
             RETURN 0;
         END IF;
     END;
-    ${'$'}${'$'} LANGUAGE plpgsql;
+    ${'$'}${'$'} language plpgsql;
 
     CREATE OR REPLACE FUNCTION is_age_in_upper_lim(user_age INTEGER, age_limit INTEGER)
         RETURNS INTEGER AS ${'$'}${'$'}
@@ -76,24 +77,20 @@ val createFunctionsStatement = """
 
 val getBestAdStatement = """ 
     select cid,
-           ((cpi * 0.8 + cpc * 0.4) + loc + af + at + gen + ml/2) AS score from
+       ((cpi * 0.8 + cpc * 0.4) + ml/2) AS score from
     (
-    select campaigns.id as cid,
-           is_within_area(c.latitude, c.longitude,
-                               ct.latitude_a, ct.latitude_b, ct.longitude_a, ct.longitude_b) as loc,
-        is_age_in_lower_lim(c.age, ct.age_from) as af,
-        is_age_in_upper_lim(c.age, ct.age_to) as at,
-        is_gender_match(c.gender, ct.gender) as gen,
+        select campaigns.id as cid,
         ms.score as ml, campaigns.cost_per_impression as cpi, campaigns.cost_per_click as cpc from campaigns
-    inner join public.campaign_target ct on campaigns.id = ct.campaign_id
-    inner join public.advertisers a on a.id = campaigns.advertiser_id
-    inner join public.ml_scores ms on a.id = ms.advertiser_id
-    inner join public.clients c on c.id = ms.client_id
-    where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < campaigns.impressions_limit
-    and (select count(*) from clicks where clicks.campaign_id = campaigns.id) <= campaigns.clicks_limit
-    and campaigns.start_date <= %d
-    and %d <= campaigns.end_date
-    and c.id = '%S'
+        inner join public.campaign_target ct on campaigns.id = ct.campaign_id
+        inner join (select * from unnest(?, ?) as x(id, score)) ms on ms.id = cast(advertiser_id as text)
+
+        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < campaigns.impressions_limit
+                  and campaigns.start_date <= ?
+                  and ? <= campaigns.end_date
+        and is_within_area(?, ct.location) = 1
+        and is_age_in_lower_lim(?, ct.age_from) = 1
+        and is_age_in_upper_lim(?, ct.age_to) = 1
+        and is_gender_match(?, ct.gender) = 1
     ) as subquery
-     order by score DESC, ml DESC, cpi DESC limit 1
-""".trimIndent() //todo fix ml_scores missings
+    order by score DESC, ml DESC, cpi DESC limit 1 
+""".trimIndent()

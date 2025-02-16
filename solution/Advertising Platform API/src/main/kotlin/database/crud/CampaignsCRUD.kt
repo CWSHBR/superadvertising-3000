@@ -9,6 +9,7 @@ import ru.cwshbr.database.tables.CampaignsTable
 import ru.cwshbr.models.CampaignModel
 import ru.cwshbr.models.CampaignTarget
 import ru.cwshbr.utils.CurrentDate
+import ru.cwshbr.utils.StatementPrepare
 import java.util.*
 
 object CampaignsCRUD {
@@ -109,7 +110,21 @@ object CampaignsCRUD {
 
     fun getAd(clientId: UUID): CampaignModel? =
         transaction {
-            val statement = String.format(getBestAdStatement, CurrentDate, CurrentDate, clientId.toString())
+            val user = ClientsCRUD.read(clientId)
+
+            val (keys, vals) = AdvertisersCRUD.getFullMlTable(clientId)
+
+            val statement = StatementPrepare(getBestAdStatement)
+                .addParam(keys)
+                .addParam(vals)
+                .addParam(CurrentDate)
+                .addParam(CurrentDate)
+                .addParam(user!!.location)
+                .addParam(user.age)
+                .addParam(user.age)
+                .addParam(user.gender.toString())
+                .build()
+
             println(statement)
             val i = exec(statement) { rs ->
                 val result = arrayListOf<String>()

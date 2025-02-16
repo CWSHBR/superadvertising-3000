@@ -52,6 +52,25 @@ object AdvertisersCRUD {
         return Pair(true, null)
     }
 
+    fun getFullMlTable(clientId: UUID): Pair<List<String>, List<Int>>{
+        val (allAdvertisers, MlMap) = transaction {
+            val advs = AdvertisersTable.selectAll()
+                .map { it[AdvertisersTable.id].value.toString() }
+
+            val mls = MLScoresTable.selectAll()
+                .where { MLScoresTable.clientId eq clientId }
+                .associate { it[MLScoresTable.advertiserId].value.toString() to it[MLScoresTable.score] }
+
+            Pair(advs, mls)
+        }
+
+        val missingIds = allAdvertisers.toSet() - MlMap.keys
+
+        val allMls =  MlMap + missingIds.associateWith { 0 }
+
+        return Pair(allMls.keys.toList(), allMls.values.toList())
+    }
+
     fun getMlScore(advertiserId: UUID, clientId: UUID)= transaction {
         MLScoresTable.select(MLScoresTable.score)
             .where { (MLScoresTable.advertiserId eq advertiserId) and
