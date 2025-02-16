@@ -59,7 +59,7 @@ data class UpdateCampaignRequestModel(
         } else oldCampaign.adTitle
 
         val atx = if (json.containsKey("ad_text")) {
-            if (Validation.validateField(ad_text, 1..255)) return null
+            if (Validation.validateField(ad_text, 1..255)) return null  // todo не проверять текст на длину
             ad_text!!
         } else oldCampaign.adText
 

@@ -215,11 +215,18 @@ class CampaignController(val call: ApplicationCall) {
         }
 
         if(!StatisticsCRUD.impressionExists(adId, clientId)){
-            call.respond(HttpStatusCode.NotFound, ErrorResponse("Не было просмотра рекламы"))
+            call.respond(HttpStatusCode.Forbidden, ErrorResponse("Не было просмотра рекламы"))
             return
         }
 
         val campaign = CampaignsCRUD.read(adId)!!
+
+        val stats = StatisticsCRUD.countAllClicks(campaign.id)
+
+        if (stats != null && stats.count >= campaign.clicksLimit){
+            call.respond(HttpStatusCode.TooManyRequests, ErrorResponse("You cannot click above the limit"))
+            return
+        }
 
         StatisticsCRUD.createClick(campaign, clientId)
 

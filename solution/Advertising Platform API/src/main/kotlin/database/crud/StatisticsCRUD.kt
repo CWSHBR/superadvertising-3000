@@ -40,8 +40,9 @@ object StatisticsCRUD {
         val s = Impressions.cost.sum().alias("s")
         Impressions.select(c, s)
             .where { Impressions.campaignId eq campaignId }
-            .single()
-            .let { StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .singleOrNull()
+            .let { if(it == null) null else
+                StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countDailyImpressions(campaignId: UUID) = transaction{
@@ -50,7 +51,7 @@ object StatisticsCRUD {
         Impressions.select(Impressions.date, c, s)
             .where { Impressions.campaignId eq campaignId }
             .groupBy(Impressions.date)
-            .associate { it[Impressions.date] to StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .associate { it[Impressions.date] to StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countAllClicks(campaignId: UUID) = transaction{
@@ -58,8 +59,9 @@ object StatisticsCRUD {
         val s = Clicks.cost.sum().alias("s")
         Clicks.select(c, s)
             .where { Clicks.campaignId eq campaignId }
-            .single()
-            .let { StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .singleOrNull()
+            .let { if(it == null) null else
+                StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countDailyClicks(campaignId: UUID) = transaction{
@@ -68,7 +70,7 @@ object StatisticsCRUD {
         Clicks.select(c, s, Clicks.date)
             .where { Clicks.campaignId eq campaignId }
             .groupBy(Clicks.date)
-            .associate { it[Clicks.date] to StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .associate { it[Clicks.date] to StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countAllImpressionsByAdvertiser(advertiserId: UUID) = transaction{
@@ -77,8 +79,9 @@ object StatisticsCRUD {
         Impressions.join(CampaignsTable, JoinType.INNER, Impressions.campaignId, CampaignsTable.id)
             .select(c, s)
             .where { CampaignsTable.advertiserId eq advertiserId }
-            .single()
-            .let { StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .singleOrNull()
+            .let { if(it == null) null else
+                StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countDailyImpressionsByAdvertiser(advertiserId: UUID) = transaction{
@@ -88,7 +91,7 @@ object StatisticsCRUD {
             .select(c, s, Impressions.date)
             .where { CampaignsTable.advertiserId eq advertiserId }
             .groupBy(Impressions.date)
-            .associate { it[Impressions.date] to StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .associate { it[Impressions.date] to StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countAllClicksByAdvertiser(advertiserId: UUID) = transaction{
@@ -97,8 +100,9 @@ object StatisticsCRUD {
         Clicks.join(CampaignsTable, JoinType.INNER, Clicks.campaignId, CampaignsTable.id)
             .select(c, s)
             .where { CampaignsTable.advertiserId eq advertiserId }
-            .single()
-            .let { StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .singleOrNull()
+            .let { if(it == null) null else
+                StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
     fun countDailyClicksByAdvertiser(advertiserId: UUID) = transaction{
@@ -108,7 +112,7 @@ object StatisticsCRUD {
             .select(c, s, Clicks.date)
             .where { CampaignsTable.advertiserId eq advertiserId }
             .groupBy(Clicks.date)
-            .associate { it[Clicks.date] to StatisticModel(it[c].toInt(), it[s]!!.toFloat()) }
+            .associate { it[Clicks.date] to StatisticModel(it[c].toInt(), it[s] ?: 0f) }
     }
 
 

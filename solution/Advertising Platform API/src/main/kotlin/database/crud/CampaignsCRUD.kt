@@ -125,7 +125,7 @@ object CampaignsCRUD {
                 .addParam(user.gender.toString())
                 .build()
 
-            println(statement)
+//            println(statement)
             val i = exec(statement) { rs ->
                 val result = arrayListOf<String>()
                 while (rs.next()) {
