@@ -10,6 +10,4 @@ object ClientsTable: IdTable<UUID>("clients") {
     val age = integer("age")
     val gender = enumerationByName<Gender>("gender", 10)
     val location = varchar("location", 128)
-    val latitude = double("latitude").default(0.0)
-    val longitude = double("longitude").default(0.0)
 }

@@ -1,10 +1,8 @@
 package ru.cwshbr.database.tables
 
 import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption
-import ru.cwshbr.models.enums.Gender
-import java.util.UUID
+import java.util.*
 
 object CampaignsTable: IdTable<UUID>("campaigns") {
     override val id = uuid("id").entityId().uniqueIndex()
@@ -17,4 +15,5 @@ object CampaignsTable: IdTable<UUID>("campaigns") {
     val adText = varchar("ad_text", 255)
     val startDate = integer("start_date")
     val endDate = integer("end_date")
+    val isActive = bool("is_active").default(true)
 }

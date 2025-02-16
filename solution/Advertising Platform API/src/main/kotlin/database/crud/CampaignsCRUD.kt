@@ -8,7 +8,6 @@ import ru.cwshbr.database.tables.CampaignTargetTable
 import ru.cwshbr.database.tables.CampaignsTable
 import ru.cwshbr.models.CampaignModel
 import ru.cwshbr.models.CampaignTarget
-import ru.cwshbr.models.integrations.nominatim.BoundingBox
 import ru.cwshbr.utils.CurrentDate
 import java.util.*
 
@@ -98,26 +97,12 @@ object CampaignsCRUD {
                 it[ageFrom] = campaign.target?.ageFrom
                 it[ageTo] = campaign.target?.ageTo
                 it[location] = campaign.target?.location
-                it[latitudeA] = 0.0
-                it[latitudeB] = 0.0
-                it[longitudeA] = 0.0
-                it[longitudeB] = 0.0
             }
             Pair(true, null)
         } catch (e: Exception) {
             Pair(true, e.message)
         }
     }
-
-    fun addBoundingBox(campaignId: UUID, bbox: BoundingBox) = transaction {
-        CampaignTargetTable.update({ CampaignTargetTable.campaignId eq campaignId }) {
-            it[latitudeA] = bbox.latitudeA
-            it[latitudeB] = bbox.latitudeB
-            it[longitudeA] = bbox.longitudeA
-            it[longitudeB] = bbox.longitudeB
-        }
-    }
-
     fun delete(campaignId: UUID) = transaction {
         CampaignsTable.deleteWhere { id eq campaignId }
     }

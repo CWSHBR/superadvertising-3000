@@ -3,18 +3,12 @@ package ru.cwshbr.plugins
 import com.rabbitmq.client.Channel
 import io.github.damir.denis.tudor.ktor.server.rabbitmq.RabbitMQ
 import io.github.damir.denis.tudor.ktor.server.rabbitmq.connection.ConnectionManager
-import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.*
+import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.exchangeDeclare
+import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.queueBind
+import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.queueDeclare
+import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.rabbitmq
 import io.ktor.server.application.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import ru.cwshbr.database.crud.CampaignsCRUD
-import ru.cwshbr.database.crud.ClientsCRUD
-import ru.cwshbr.integrations.nominatim.Nominatim
-import ru.cwshbr.models.integrations.nominatim.BoundingBox
-import ru.cwshbr.models.integrations.nominatim.Position
-import ru.cwshbr.models.rabbitmq.LocationMessageModel
 import ru.cwshbr.utils.RABBITMQ_URL
-import java.util.*
 
 var rabbitMQChannel: Channel? = null
 var rabbitMQConnMan: ConnectionManager? = null
@@ -44,65 +38,8 @@ fun Application.configureRabbitMQ() {
             }
         }
 
-        connection(id = "consume-nom") {
-            basicConsume {
-                autoAck = true
-                queue = "nominatim"
-                deliverCallback<String> { tag, message ->
-                    consumeLocationMessage(message)
-                }
-            }
-        }
         rabbitMQConnMan = connectionManager
         rabbitMQChannel = channel
 
-    }
-}
-
-suspend fun addToLocationQueue(locationMessage: LocationMessageModel): Boolean {
-    try {
-        println("in addToLocationQueue $locationMessage")
-
-        val data = Json.encodeToString(locationMessage)
-        ChannelContext(rabbitMQConnMan!!, rabbitMQChannel!!)
-            .basicPublish {
-                exchange = "exchange"
-                routingKey = "to-nominatim"
-                message { data }
-            }
-
-    } catch (ex: Exception) {
-        println("error in addToLocQueue: ${ex.message}")
-        return false
-    }
-    println("successfully sent to nominatim: $locationMessage")
-    return true
-}
-
-private suspend fun consumeLocationMessage(message: String): Boolean {
-    try {
-        println("in consumeLocationMessage: $message")
-        val format = Json { encodeDefaults = true }
-        val locationMessage = format.decodeFromString<LocationMessageModel>(message)
-
-        if (!locationMessage.isForCampaign){
-            val id = UUID.fromString(locationMessage.id)
-            val position = Nominatim.getPlacePosition(locationMessage.location) ?: Position(0.0,0.0)
-            ClientsCRUD.addPosition(Pair(id, position))
-
-            println("successfully consumed and saved ${locationMessage.id} at $position")
-        }
-        else {
-            val campaignId = UUID.fromString(locationMessage.id)
-            val bbox = Nominatim.getPlaceBoundingBox(locationMessage.location)
-                ?: BoundingBox(0.0,0.0, 0.0,0.0)
-            CampaignsCRUD.addBoundingBox(campaignId, bbox)
-
-            println("successfully consumed and saved ${locationMessage.id} at $bbox")
-        }
-        return true
-    } catch (e: Exception) {
-        println("error in consumeLocationMessage: $e")
-        return false
     }
 }

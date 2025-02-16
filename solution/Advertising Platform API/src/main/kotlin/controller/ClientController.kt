@@ -7,8 +7,6 @@ import io.ktor.server.response.*
 import ru.cwshbr.database.crud.ClientsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
-import ru.cwshbr.models.rabbitmq.LocationMessageModel
-import ru.cwshbr.plugins.addToLocationQueue
 import java.util.*
 
 class ClientController(val call: ApplicationCall) {
@@ -31,12 +29,6 @@ class ClientController(val call: ApplicationCall) {
             call.respond(HttpStatusCode.NotFound, ErrorResponse(reason.toString())) //todo do not show reason
             return
         }
-
-        clients.forEach { addToLocationQueue(
-            LocationMessageModel(
-                it.id.toString(),
-                it.location
-        )) }
 
         call.respond(HttpStatusCode.Created, r) // TODO GET ONLY UNIQUE LAST CHANGES
     }

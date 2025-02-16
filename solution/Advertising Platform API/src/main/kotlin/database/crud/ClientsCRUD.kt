@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.cwshbr.database.tables.ClientsTable
 import ru.cwshbr.models.ClientModel
-import ru.cwshbr.models.integrations.nominatim.Position
 import java.util.*
 
 object ClientsCRUD {
@@ -28,23 +27,9 @@ object ClientsCRUD {
             it[age] = client.age
             it[gender] = client.gender
             it[location] = client.location
-            it[latitude] = 0.0
-            it[longitude] = 0.0
         }
     }
 
-    fun addPosition(poses: Pair<UUID, Position>) = transaction {
-        try {
-            poses.let { pair ->
-                val (id, pos) = pair
-                ClientsTable.update ({ ClientsTable.id eq id }) {
-                    it[latitude] = pos.latitude
-                    it[longitude] = pos.longitude
-                }
-            }
-        } catch (_: Exception) { }
-
-    }
 
     fun clientExists(id: UUID) = transaction {
         ClientsTable.selectAll()
@@ -63,8 +48,6 @@ object ClientsCRUD {
                             it[age] = client.age
                             it[gender] = client.gender
                             it[location] = client.location
-                            it[latitude] = 0.0
-                            it[longitude] = 0.0
                         }
                     } else {
                         ClientsTable.update({ ClientsTable.id eq client.id }) {
