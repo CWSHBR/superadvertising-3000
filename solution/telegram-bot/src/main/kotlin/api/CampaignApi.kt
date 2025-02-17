@@ -32,6 +32,7 @@ object CampaignApi {
         val cachedCampaign = Caching.getCampaign(campaignId)
 
         if (cachedCampaign != null && !notCached) {
+            println("GOT CACHED: ${cachedCampaign.adText}")
             return cachedCampaign
         }
 
@@ -43,9 +44,11 @@ object CampaignApi {
 
             Caching.writeNewCampaigns(listOf(campaign))
 
+            println("GOT NEW: ${campaign.adText}")
             return campaign
         }
 
+        println("NOT FOUND")
         return null
     }
 

@@ -4,12 +4,12 @@ import dev.inmo.tgbotapi.extensions.api.send.reply
 import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContext
 import dev.inmo.tgbotapi.extensions.utils.extensions.raw.from
 import dev.inmo.tgbotapi.types.message.MarkdownParseMode
-import dev.inmo.tgbotapi.types.message.content.TextMessage
+import dev.inmo.tgbotapi.types.message.abstracts.CommonMessage
 import kotlinx.coroutines.runBlocking
 import ru.cwshbr.models.inout.ErrorMessage
 import ru.cwshbr.states.StateMachine
 
-abstract class AbstractAuthController(val message: TextMessage, val bc: BehaviourContext) {
+abstract class AbstractAuthController(val message: CommonMessage<*>, val bc: BehaviourContext) {
     val advertiserId = StateMachine.getLogin(message.from!!.id.chatId.long)
     init {
         if (advertiserId == null) {

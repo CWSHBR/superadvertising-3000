@@ -2,11 +2,8 @@ package ru.cwshbr.controller
 
 import dev.inmo.tgbotapi.extensions.api.send.reply
 import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContext
-import dev.inmo.tgbotapi.types.buttons.inline.dataInlineButton
 import dev.inmo.tgbotapi.types.message.MarkdownParseMode
 import dev.inmo.tgbotapi.types.message.content.TextMessage
-import dev.inmo.tgbotapi.utils.matrix
-import dev.inmo.tgbotapi.utils.row
 import ru.cwshbr.api.CampaignApi
 import ru.cwshbr.keyboards.GetCampaignKeyboards
 import ru.cwshbr.models.inout.SuccessMessage
@@ -24,9 +21,9 @@ class CampaignController(message: TextMessage, bc: BehaviourContext): AbstractAu
 
         val keys = GetCampaignKeyboards.generateCampaignListKeyboard(campaigns)
 
-        println(bc.reply(message, text = SuccessMessage.yourCampaigns.toString(), parseMode = MarkdownParseMode,
+        bc.reply(message, text = SuccessMessage.yourCampaigns.toString(), parseMode = MarkdownParseMode,
             replyMarkup = keys
-        ))
+        )
 
     }
 }

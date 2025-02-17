@@ -17,4 +17,13 @@ data class CampaignModel(
     val target: CampaignTarget?
 ){
     fun toKeyboardCallbackFormat() = "$id"
+
+    fun toMessageFormat() : String{
+        var out = ""
+        out += "\uD83D\uDCDA Название: $adTitle\n\n"
+        out += "\uD83D\uDCC4 Текст: $adText\n\n"
+        out += "\uD83C\uDFF7\uFE0F Стоймость просмотра: $costPerImpression и клика: $costPerClick\n"
+        out += "\uD83D\uDCC5 C $startDate по $endDate день"
+        return out
+    }
 }
