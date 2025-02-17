@@ -12,7 +12,7 @@ import ru.cwshbr.states.StateMachine
 abstract class AbstractAuthController(val message: TextMessage, val bc: BehaviourContext) {
     val advertiserId = StateMachine.getLogin(message.from!!.id.chatId.long)
     init {
-        if (advertiserId != null) {
+        if (advertiserId == null) {
             runBlocking {
                 bc.reply(message, text = ErrorMessage.NotAuthorized.toString(), parseMode = MarkdownParseMode)
             }

@@ -10,7 +10,7 @@ import ru.cwshbr.utils.BASE_URL
 import java.util.*
 
 object CampaignApi {
-    suspend fun getCampaignsList(advertiserId: UUID, page: Int = 0, size: Int = 0): List<CampaignModel> {
+    suspend fun getCampaignsList(advertiserId: UUID, page: Int = 0, size: Int = 5): List<CampaignModel> {
         val response = client.get("$BASE_URL/advertisers/$advertiserId/campaigns") {
             parameter("page", page)
             parameter("size", size)

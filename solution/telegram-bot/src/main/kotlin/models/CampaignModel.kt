@@ -15,4 +15,6 @@ data class CampaignModel(
     val startDate: Int,
     val endDate: Int,
     val target: CampaignTarget?
-)
+){
+    fun toKeyboardCallbackFormat() = "$id"
+}

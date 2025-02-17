@@ -5,6 +5,7 @@ import dev.inmo.tgbotapi.extensions.behaviour_builder.buildBehaviourWithLongPoll
 import dev.inmo.tgbotapi.extensions.behaviour_builder.createSubContext
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onMessageCallbackQuery
+import ru.cwshbr.controller.CampaignController
 import ru.cwshbr.controller.LoginController
 import ru.cwshbr.utils.TELEGRAM_BOT_TOKEN
 
@@ -18,7 +19,7 @@ suspend fun telegramRoutingInit(){
         }
 
         onCommand("mycampaigns", requireOnlyCommandInMessage = false){
-
+            CampaignController(it, subcontext).getCampaigns()
         }
 
 

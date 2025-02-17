@@ -5,7 +5,7 @@ import io.ktor.client.request.*
 import ru.cwshbr.models.inout.advertiser.AdvertisersResponseModel
 import ru.cwshbr.plugins.client
 import ru.cwshbr.utils.BASE_URL
-import java.util.UUID
+import java.util.*
 
 object AdvertiserApi {
     suspend fun getAdvertiserName(id: UUID): String? {
