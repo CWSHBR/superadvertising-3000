@@ -45,10 +45,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
 
-    // TELEGRAM
-    implementation("com.github.pengrad:java-telegram-bot-api:6.0.1")
-    implementation("org.telegram:telegrambots:5.3.0")
-
     //logs
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
