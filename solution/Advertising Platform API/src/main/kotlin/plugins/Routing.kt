@@ -85,6 +85,16 @@ fun Application.configureRouting() {
                 }
             }
 
+            route("/moderation"){
+                post("/addrestrictedwords"){
+                    ModerationController(call).addRestrictedWords()
+                }
+
+                post{
+                    ModerationController(call).switchRestrictions()
+                }
+            }
+
         }
     }
 }

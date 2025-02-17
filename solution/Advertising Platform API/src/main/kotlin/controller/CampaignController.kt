@@ -14,6 +14,7 @@ import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
 import ru.cwshbr.plugins.JsonFormat
+import ru.cwshbr.utils.Moderation
 import java.util.*
 
 class CampaignController(val call: ApplicationCall) {
@@ -75,6 +76,11 @@ class CampaignController(val call: ApplicationCall) {
             return
         }
 
+        if (!Moderation.checkText(updatedModel.adText)){
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("В тексте содержатся запрещенные слова."))
+            return
+        }
+
         val (success, reason) = CampaignsCRUD.update(updatedModel)
 
         if (!success) {
@@ -129,6 +135,11 @@ class CampaignController(val call: ApplicationCall) {
 
         if (!r.validate()){ //todo validate with reason
             call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid request data"))
+            return
+        }
+
+        if (!Moderation.checkText(r.ad_text)){
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("В тексте содержатся запрещенные слова."))
             return
         }
 
