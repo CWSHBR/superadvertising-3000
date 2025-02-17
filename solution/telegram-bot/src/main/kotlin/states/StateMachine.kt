@@ -16,18 +16,18 @@ object StateMachine {
         userId: Long,
         statusData: StatusData,
     ) {
-        Caching.status_cache[userId] = statusData
+        Caching.statusCache[userId] = statusData
     }
 
     fun getStatus(userId: Long): StatusData? {
-        return if (Caching.status_cache.containsKey(userId)) {
-            Caching.status_cache[userId]
+        return if (Caching.statusCache.containsKey(userId)) {
+            Caching.statusCache[userId]
         } else {
             null
         }
     }
 
     fun removeStatus(userId: Long) {
-        Caching.status_cache.remove(userId)
+        Caching.statusCache.remove(userId)
     }
 }

@@ -1,15 +1,14 @@
-package ru.cwshbr.models.inout.campaigns
+package ru.cwshbr.models.inout.campaign
 
 import kotlinx.serialization.Serializable
-import ru.cwshbr.models.CampaignModel
-import ru.cwshbr.models.CampaignTarget
+import ru.cwshbr.models.*
 import ru.cwshbr.models.enums.Gender
-import ru.cwshbr.utils.CurrentDate
-import ru.cwshbr.utils.Validation
 import java.util.*
 
 @Serializable
-data class CreateCampaignRequestModel(
+data class GetCampaignResponseModel(
+    val campaign_id: String,
+    val advertiser_id: String,
     val impressions_limit: Int,
     val clicks_limit: Int,
     val cost_per_impression: Float,
@@ -20,7 +19,6 @@ data class CreateCampaignRequestModel(
     val end_date: Int,
     val targeting: TargetResponseModel
 ) {
-
     private fun toGender(gender: String?) = when (gender) {
         "MALE" -> Gender.MALE
         "FEMALE" -> Gender.FEMALE
@@ -28,10 +26,10 @@ data class CreateCampaignRequestModel(
         else -> null
     }
 
-    fun toCampaignModel(id: UUID, advertiserId: UUID) =
+    fun toCampaignModel() =
         CampaignModel(
-            id,
-            advertiserId,
+            UUID.fromString(campaign_id),
+            UUID.fromString(advertiser_id),
             impressions_limit,
             clicks_limit,
             cost_per_impression,
