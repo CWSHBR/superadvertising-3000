@@ -42,10 +42,14 @@ class ImagesController(val call: ApplicationCall) {
                 val imageName = UUID.randomUUID().toString()
 
                 val bytes = r.readBytes()
-
                 if (bytes.size > 5242880){
                     call.respond(HttpStatusCode.PayloadTooLarge, ErrorResponse("Image too large. 5MB max"))
                     return
+                }
+
+                val lastImage = ImagesCRUD.getImage(campaignId)
+                if (lastImage != null) {
+                    ImageLoading.deleteImageFromS3(lastImage)
                 }
 
                 ImageLoading.saveImageToS3(imageName, bytes)
