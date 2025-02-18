@@ -10,3 +10,9 @@ val POSTGRES_PASSWORD = System.getenv("POSTGRES_PASSWORD")
 
 //Queue
 val RABBITMQ_URL = System.getenv("RABBITMQ_URL")
+
+//s3
+val S3_URL = System.getenv("S3_URL")
+val S3_ACCESS_KEY = System.getenv("S3_ACCESS_KEY")
+val S3_SECRET_KEY = System.getenv("S3_SECRET_KEY")
+val S3_BUCKET = System.getenv("S3_BUCKET")

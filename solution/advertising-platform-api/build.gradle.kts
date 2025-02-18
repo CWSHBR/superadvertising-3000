@@ -39,6 +39,9 @@ dependencies {
     implementation("io.ktor:ktor-client-cio")
     implementation("io.ktor:ktor-client-content-negotiation")
 
+    //s3
+    implementation("software.amazon.awssdk:s3:2.20.103")
+
     //database
     implementation("org.postgresql:postgresql:$postgres_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")

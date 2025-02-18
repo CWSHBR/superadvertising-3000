@@ -35,6 +35,14 @@ fun Application.configureRouting() {
                         }
 
                         route("/{campaignId}"){
+                            route("/image"){
+                                get{
+                                    ImagesController(call).getImage()
+                                }
+                                post {
+                                    ImagesController(call).setImage()
+                                }
+                            }
                             get {
                                 CampaignController(call).getCampaignById()
                             }

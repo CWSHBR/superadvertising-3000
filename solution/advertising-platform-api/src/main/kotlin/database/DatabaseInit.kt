@@ -14,7 +14,8 @@ object DatabaseInit {
             CampaignsTable,
             CampaignTargetTable,
             Impressions,
-            Clicks
+            Clicks,
+            ImagesTable
         )
 
     fun initialize() {

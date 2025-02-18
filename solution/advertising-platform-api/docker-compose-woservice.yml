@@ -20,3 +20,17 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+
+  minio:
+    image: docker.io/bitnami/minio:2025
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_DEFAULT_BUCKETS: "bucket"
+    volumes:
+      - 'minio_data:/bitnami/minio/data'
+
+volumes:
+    minio_data:
+      driver: local
