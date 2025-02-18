@@ -2,7 +2,6 @@ package ru.cwshbr
 
 import database.DatabaseFactory
 import database.DatabaseInit
-import database.getBestAdStatement
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -10,7 +9,10 @@ import org.jetbrains.exposed.sql.Database
 import ru.cwshbr.plugins.configureRabbitMQ
 import ru.cwshbr.plugins.configureRouting
 import ru.cwshbr.plugins.configureSerialization
-import ru.cwshbr.utils.*
+import ru.cwshbr.utils.POSTGRES_PASSWORD
+import ru.cwshbr.utils.POSTGRES_URL
+import ru.cwshbr.utils.POSTGRES_USERNAME
+import ru.cwshbr.utils.SERVER_PORT
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
