@@ -2,6 +2,8 @@ package ru.cwshbr.api
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import ru.cwshbr.models.CampaignModel
 import ru.cwshbr.models.inout.campaign.GetCampaignResponseModel
 import ru.cwshbr.plugins.client
@@ -50,6 +52,39 @@ object CampaignApi {
 
         println("NOT FOUND")
         return null
+    }
+
+    suspend fun getImage(advertiserId: UUID, campaignId: UUID, notCached: Boolean = false): ByteArray? {
+        val cachedImage = Caching.getImage(campaignId)
+
+        if (cachedImage != null && !notCached) {
+            return cachedImage
+        }
+
+        val response = client.get("$BASE_URL/advertisers/$advertiserId/campaigns/$campaignId/image")
+
+        if (response.status.value == 200) {
+            val r = response.bodyAsBytes()
+
+            Caching.cacheImage(campaignId, r)
+
+            return r
+        }
+
+        return null
+    }
+
+    suspend fun setImage(advertiserId: UUID, campaignId: UUID, image: ByteArray): Pair<Boolean, String?> {
+        val response = client.post("$BASE_URL/advertisers/$advertiserId/campaigns/$campaignId/image"){
+            contentType(ContentType.Image.JPEG)
+            setBody(image)
+        }
+
+        return when (response.status.value) {
+            200 -> Pair(true, null)
+            413 -> Pair(false, "Фотография превышает лимит веса в 5 МБ.")
+            else -> Pair(false, "Неизвестная ошибка.")
+        }
     }
 
 

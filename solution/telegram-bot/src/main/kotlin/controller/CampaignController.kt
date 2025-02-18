@@ -19,7 +19,7 @@ class CampaignController(message: TextMessage, bc: BehaviourContext): AbstractAu
             return
         }
 
-        val keys = GetCampaignKeyboards.generateCampaignListKeyboard(campaigns)
+        val keys = GetCampaignKeyboards.campaignListKeyboard(campaigns)
 
         bc.reply(message, text = SuccessMessage.yourCampaigns.toString(), parseMode = MarkdownParseMode,
             replyMarkup = keys

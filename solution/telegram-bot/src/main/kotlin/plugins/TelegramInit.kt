@@ -31,6 +31,10 @@ suspend fun telegramRoutingInit(){
             CampaignCallbackController(it, subcontext).getCampaignListCallback()
         }
 
+        onDataCallbackQuery("getimage:.*") {
+            CampaignCallbackController(it, subcontext).getCampaignImage()
+        }
+
 
     }.join()
 }
