@@ -77,6 +77,7 @@ object CampaignsCRUD {
             .selectAll()
             .where { CampaignsTable.advertiserId eq advertiserId }
             .limit(size).offset(size * page.toLong())
+            .orderBy(CampaignsTable.index to SortOrder.DESC)
             .map(::resultRowToCampaign)
     }
 

@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import java.util.*
 
 object CampaignsTable: IdTable<UUID>("campaigns") {
+    val index = integer("index").autoIncrement()
     override val id = uuid("id").entityId().uniqueIndex()
     val advertiserId = reference("advertiser_id", AdvertisersTable.id, onDelete = ReferenceOption.CASCADE)
     val impressionsLimit = integer("impressions_limit")

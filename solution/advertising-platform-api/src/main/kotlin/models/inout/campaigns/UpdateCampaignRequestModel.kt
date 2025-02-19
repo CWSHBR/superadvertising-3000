@@ -54,12 +54,12 @@ data class UpdateCampaignRequestModel(
         } else oldCampaign.costPerClick
 
         val ati = if (json.containsKey("ad_title")) {
-            if (Validation.validateField(ad_title, 1..63)) return null
+            if (!Validation.validateField(ad_title, 1..63)) return null
             ad_title!!
         } else oldCampaign.adTitle
 
         val atx = if (json.containsKey("ad_text")) {
-            if (Validation.validateField(ad_text, 1..255)) return null  // todo не проверять текст на длину
+            if (!Validation.validateField(ad_text, 1..255)) return null  // todo не проверять текст на длину
             ad_text!!
         } else oldCampaign.adText
 
