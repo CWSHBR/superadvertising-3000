@@ -8,14 +8,13 @@ variables:
   DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
   DOCKER_DRIVER: overlay2
 
-image: docker:20.10.16
+image: docker:27.5.1
 
 services:
-  - name: docker:20.10.16-dind
+  - name: docker:27.5.1-dind
     command: [
       "--registry-mirror=http://gitlab.prodcontest.ru:5015",
-      "--registry-mirror=https://dockerhub.timeweb.cloud",
-      "--registry-mirror=https://huecker.io",
+      "--registry-mirror=https://dockerhub.timeweb.cloud"
     ]
 
 test:
@@ -27,11 +26,14 @@ test:
   before_script:
     - for try in {1..10}; do sleep 0.5; docker info && break ; done
     - echo "$DOCKER_DEPLOY_KEY" | docker login -u "backend" --password-stdin $CI_REGISTRY
-    - cd solution && docker-compose up -d
+    - docker compose version
+    - cd solution && docker compose up -d
+    - echo "Sleep 60 second"
+    - sleep 60
   script:
     - docker run -v $CI_PROJECT_DIR:/app/result --network host gitlab.prodcontest.ru:5050/2025-final-indiv-repos/backend-checker:v1.0
   after_script:
-    - docker-compose down
+    - cd solution && docker compose down
   artifacts:
     paths:
       - total_stats.json
