@@ -29,7 +29,7 @@ test:
     - docker compose version
     - cd solution && docker compose up -d
   script:
-    - docker run -v $CI_PROJECT_DIR:/app/result --network host gitlab.prodcontest.ru:5050/2025-final-indiv-repos/backend-checker:v1.1
+    - docker run -v $CI_PROJECT_DIR:/app/result --network host gitlab.prodcontest.ru:5050/2025-final-indiv-repos/backend-checker:v1.2
   after_script:
     - cd solution && docker compose down
   artifacts:
