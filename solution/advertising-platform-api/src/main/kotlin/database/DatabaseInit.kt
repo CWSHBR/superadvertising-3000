@@ -78,14 +78,14 @@ val createFunctionsStatement = """
 
 val getBestAdStatement = """ 
     select cid,
-       ((cpi * 0.8 + cpc * 0.4) + ml/2) AS score from
+       ((cpi * 0.8 + cpc * 0.4) + ml/2.2) AS score from
     (
         select campaigns.id as cid,
         ms.score as ml, campaigns.cost_per_impression as cpi, campaigns.cost_per_click as cpc from campaigns
         inner join public.campaign_target ct on campaigns.id = ct.campaign_id
         inner join (select * from unnest(?, ?) as x(id, score)) ms on ms.id = cast(advertiser_id as text)
 
-        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < campaigns.impressions_limit
+        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < (campaigns.impressions_limit * 1.05)
                   and campaigns.start_date <= ?
                   and ? <= campaigns.end_date
         and is_within_area(?, ct.location) = 1

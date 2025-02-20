@@ -14,7 +14,7 @@ object GetCampaignKeyboards {
             "getcampaign:$campaignId")
     )
 
-    fun campaignListKeyboard(campaigns: List<CampaignModel>, ) = InlineKeyboardMarkup (
+    fun campaignListKeyboard(campaigns: List<CampaignModel>) = InlineKeyboardMarkup (
              keyboard = campaigns.map {
                  listOf(
                      dataInlineButton(

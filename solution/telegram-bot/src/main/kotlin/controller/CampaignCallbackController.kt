@@ -60,8 +60,6 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
 
         val campaign = CampaignApi.getCampaign(advertiserId, campaignId, isNoCache)
 
-        val message = callbackQuery.message as ContentMessage<TextContent>
-
         if (campaign == null) {
             updateOrCreate(text = ErrorMessage.CampaignNotFound.toString(),
                 replyMarkup = GetCampaignKeyboards.backToMyCampaignsKeyboard(),
