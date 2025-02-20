@@ -45,15 +45,6 @@ class GetAdsTest {
     )
     }
 
-    private suspend fun HttpClient.advanceTime(i: Int): HttpResponse{
-        val r =this.post("/api/time/advance") {
-            contentType(ContentType.Application.Json)
-            setBody(JsonFormat.encodeToString(CurrentTimeModel(i)))
-        }
-        assertEquals(HttpStatusCode.OK, r.status)
-        return r
-    }
-
 
     private fun randomString(length: Int): String {
         val symbols = ('a'..'z') + ('A'..'Z') + ('0'..'9')
@@ -70,14 +61,14 @@ class GetAdsTest {
             module()
         }
 
-        var endpoint = "/api/clients/bulk"
+        var endpoint = "/clients/bulk"
 
         assertEquals(HttpStatusCode.Created, client.post(endpoint){
             contentType(ContentType.Application.Json)
             setBody(JsonFormat.encodeToString(clients))
         }.status)
 
-        endpoint = "/api/advertisers/bulk"
+        endpoint = "/advertisers/bulk"
 
         assertEquals(HttpStatusCode.Created, client.post(endpoint){
             contentType(ContentType.Application.Json)
@@ -85,7 +76,7 @@ class GetAdsTest {
         }.status)
 
         advs.forEach { adv ->
-            var endpoint = "/api/advertisers/bulk"
+            var endpoint = "/advertisers/bulk"
 
             var r = client.post(endpoint){
                 contentType(ContentType.Application.Json)
@@ -94,7 +85,7 @@ class GetAdsTest {
 
             assertEquals(HttpStatusCode.Created, r.status)
 
-            endpoint = "/api/advertisers/${adv.advertiser_id}/campaigns"
+            endpoint = "/advertisers/${adv.advertiser_id}/campaigns"
 
             val campaigns = IntRange(0, 49).map {
                 val imlim = (5..20).random()
@@ -139,7 +130,7 @@ class GetAdsTest {
             }
         }
 
-        endpoint = "/api/ml-scores"
+        endpoint = "/ml-scores"
 
         advs.forEach { adv ->
             clients.forEach { cl ->
@@ -155,7 +146,7 @@ class GetAdsTest {
             }
         }
 
-        endpoint = "/api/ads"
+        endpoint = "/ads"
 
         CurrentDate = 4
 

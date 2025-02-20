@@ -45,7 +45,7 @@ class RoutingTest {
     )}
 
     private suspend fun HttpClient.advanceTime(i: Int): HttpResponse{
-        val r =this.post("/api/time/advance") {
+        val r =this.post("/time/advance") {
             contentType(ContentType.Application.Json)
             setBody(JsonFormat.encodeToString(CurrentTimeModel(i)))
         }
@@ -82,7 +82,7 @@ class RoutingTest {
             module()
         }
 
-        var endpoint = "/api/clients/bulk"
+        var endpoint = "/clients/bulk"
 
         //test for bad request
         assertEquals(HttpStatusCode.BadRequest, client.post(endpoint){
@@ -97,7 +97,7 @@ class RoutingTest {
             setBody(JsonFormat.encodeToString(clients))
         }.status)
 
-        endpoint = "/api/clients/"
+        endpoint = "/clients/"
 
         //send shitty id
         assertEquals(HttpStatusCode.BadRequest, client.get(endpoint+"adasd").status)
@@ -125,7 +125,7 @@ class RoutingTest {
             module()
         }
 
-        var endpoint = "/api/advertisers/bulk"
+        var endpoint = "/advertisers/bulk"
 
         //test for bad request
         assertEquals(HttpStatusCode.BadRequest, client.post(endpoint){
@@ -141,7 +141,7 @@ class RoutingTest {
             setBody(JsonFormat.encodeToString(advs))
         }.status)
 
-        endpoint = "/api/advertisers/"
+        endpoint = "/advertisers/"
 
         //send shitty id
         assertEquals(HttpStatusCode.BadRequest, client.get(endpoint+"adasd").status)
@@ -184,7 +184,7 @@ class RoutingTest {
         application {
             module()
         }
-        var endpoint = "/api/advertisers/bulk"
+        var endpoint = "/advertisers/bulk"
         val adv = advs.random()
 
         val res = client.post(endpoint){
@@ -195,11 +195,11 @@ class RoutingTest {
         assertEquals(HttpStatusCode.Created, res.status)
 
 
-        var r = client.post("/api/advertisers/00000000-0000-0000-0000-000000000000/campaigns")
+        var r = client.post("/advertisers/00000000-0000-0000-0000-000000000000/campaigns")
 
         assertEquals(HttpStatusCode.NotFound, r.status)
 
-        endpoint = "/api/advertisers/${adv.advertiser_id}/campaigns"
+        endpoint = "/advertisers/${adv.advertiser_id}/campaigns"
 
         val campaigns = IntRange(0, 49).map {
             val imlim = (2..8).random()
@@ -274,7 +274,7 @@ class RoutingTest {
 //            module()
 //        }
 //
-//        var endpoint = "/api/advertisers/bulk"
+//        var endpoint = "/advertisers/bulk"
 //        val adv = advs.random()
 //
 //        val res = client.post(endpoint){
@@ -284,7 +284,7 @@ class RoutingTest {
 //
 //        assertEquals(HttpStatusCode.Created, res.status)
 //
-//        endpoint = "/api/advertisers/${adv.advertiser_id}/campaigns/"
+//        endpoint = "/advertisers/${adv.advertiser_id}/campaigns/"
 //
 //        val imlim = (2..8).random()
 //        val cllim = imlim - (imlim * Random.nextFloat()).toInt()
