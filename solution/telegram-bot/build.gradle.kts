@@ -43,3 +43,16 @@ tasks.test {
 kotlin {
     jvmToolchain(17)
 }
+
+tasks.register("copyDependencies") {
+    doLast {
+        val libsDir = File("$buildDir/libs/libraries")
+        libsDir.mkdirs()
+
+        configurations.getByName("runtimeClasspath").files.forEach {
+            if (it.name.endsWith(".jar")) {
+                it.copyTo(File(libsDir, it.name))
+            }
+        }
+    }
+}

@@ -1,1 +1,1 @@
-rootProject.name = "Advertising Platform API"
+rootProject.name = "advertising-platform-api"

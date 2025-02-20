@@ -1,4 +1,4 @@
-FROM gradle:8.7.0-jdk as build
+FROM gradle:8.4-jdk-alpine as build
 WORKDIR /workspace/app
 
 COPY gradlew .
@@ -8,15 +8,15 @@ COPY gradle.properties .
 COPY settings.gradle.kts .
 COPY src src
 
-RUN gradle copyDependencies -x test --no-daemon
+RUN gradle copyDependencies -x test --no-daemon --stacktrace
 
-RUN gradle build -x test --no-daemon --stacktrace
+RUN gradle build -x test --no-daemon
 
-FROM openjdk:21-oracle
+FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-COPY --from=build /workspace/app/build/libs/advertising-platform-api-0.0.1.jar ./app.jar
+COPY --from=build /workspace/app/build/libs/telegram-bot-1.0-SNAPSHOT.jar ./app.jar
 COPY --from=build /workspace/app/build/libs/libraries ./libraries
 
 CMD ["java", "-cp", "libraries/*:app.jar", "ru.cwshbr.ApplicationKt"]
