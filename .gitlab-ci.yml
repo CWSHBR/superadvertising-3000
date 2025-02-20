@@ -28,10 +28,8 @@ test:
     - echo "$DOCKER_DEPLOY_KEY" | docker login -u "backend" --password-stdin $CI_REGISTRY
     - docker compose version
     - cd solution && docker compose up -d
-    - echo "Sleep 60 second"
-    - sleep 60
   script:
-    - docker run -v $CI_PROJECT_DIR:/app/result --network host gitlab.prodcontest.ru:5050/2025-final-indiv-repos/backend-checker:v1.0
+    - docker run -v $CI_PROJECT_DIR:/app/result --network host gitlab.prodcontest.ru:5050/2025-final-indiv-repos/backend-checker:v1.1
   after_script:
     - cd solution && docker compose down
   artifacts:
