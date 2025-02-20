@@ -78,7 +78,7 @@ val createFunctionsStatement = """
 
 val getBestAdStatement = """ 
     select cid,
-       ((cpi * 1.2 + cpc * 0.7) + ml/2.3) AS score from
+       ((cpi * 1.2 + cpc * 0.7) + ml/2.3) AS score from 
     (
         select campaigns.id as cid,
         ms.score as ml, campaigns.cost_per_impression as cpi, campaigns.cost_per_click as cpc from campaigns
