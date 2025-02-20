@@ -3,7 +3,6 @@ package ru.cwshbr.integrations.superset
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import ru.cwshbr.models.integrations.inout.superset.DashboardListCount
 import ru.cwshbr.models.integrations.inout.superset.GetAuthToken
@@ -13,22 +12,15 @@ import ru.cwshbr.utils.SUPERSET_BASE_URL
 import ru.cwshbr.utils.SUPERSET_PASSWORD
 import ru.cwshbr.utils.SUPERSET_USERNAME
 import ru.cwshbr.utils.client
-import java.io.File
-import kotlin.io.path.fileVisitor
 
 object SupersetAPI {
-    private var authToken: String? = null
-    private var csrfToken: String? = null
-
-    private suspend fun getCSRFToken(): String {
-        if (csrfToken != null) return csrfToken!!
-
+    private suspend fun getCSRFToken(accessToken: String): String {
         val response = client.get("$SUPERSET_BASE_URL/security/csrf_token/") {
-            bearerAuth(getAccessToken())
+            bearerAuth(accessToken)
+            header(HttpHeaders.UserAgent, "")
         }
 
-        csrfToken = response.body<GetCSRFToken>().result
-        return csrfToken!!
+        return response.body<GetCSRFToken>().result
     }
 
     suspend fun checkDashboardExists(): Boolean{
@@ -40,32 +32,33 @@ object SupersetAPI {
     }
 
     suspend fun loadSupersetDashboardPreset(): Boolean{
-        val response = client.post("$SUPERSET_BASE_URL/dashboard/preset"){
-            bearerAuth(getAccessToken())
-            header("X-CSRFToken", getCSRFToken())
-            accept(ContentType.Application.Json)
-            formData {
-                append("formData", File("export-preset.zip").readBytes())
-                append("passwords", "{\"databases/PostgreSQL.yaml\":\"$SUPERSET_PASSWORD\"}")
-                append("overwrite", true)
-            }
-
+        val token = getAccessToken()
+        val fileBytes = {}.javaClass.classLoader.getResource("NEW export.zip")!!.readBytes()
+        client.post("$SUPERSET_BASE_URL/dashboard/import/"){
+            setBody(MultiPartFormDataContent(
+                formData {
+                    append("formData", "NEW export.zip", contentType = ContentType.Application.Zip) {
+                        write(fileBytes, 0, fileBytes.size)
+                    }
+                    append("passwords", "{\"databases/PostgreSQL.yaml\": \"superset\"}")
+                    append("overwrite", "true")
+                }
+            ))
+            header(HttpHeaders.ContentType, "multipart/form-data")
+            bearerAuth(token)
+            contentLength()
         }
-
-        return response.status.value == 200
+        return true
     }
 
     private suspend fun getAccessToken(): String {
-        if (authToken != null) return authToken!!
-
-        val response = client.post("$SUPERSET_BASE_URL/security/login/") {
+        val response = client.post("$SUPERSET_BASE_URL/security/login") {
             contentType(ContentType.Application.Json)
             setBody(LoginModel(
                 SUPERSET_USERNAME,
-                SUPERSET_USERNAME
+                SUPERSET_PASSWORD
             ))
         }
-        authToken = response.body<GetAuthToken>().access_token
-        return authToken!!
+        return response.body<GetAuthToken>().access_token
     }
 }

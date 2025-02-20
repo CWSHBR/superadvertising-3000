@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+sed -i 's/WTF_CSRF_ENABLED = True/WTF_CSRF_ENABLED = False/' ./superset/config.py
+
 set -eo pipefail
 
 # Make python interactive

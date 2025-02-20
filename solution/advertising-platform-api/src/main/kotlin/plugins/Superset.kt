@@ -6,8 +6,6 @@ import ru.cwshbr.integrations.superset.SupersetAPI
 
 fun Application.configureSuperset(){
     runBlocking {
-        if (SupersetAPI.checkDashboardExists()){
-            SupersetAPI.loadSupersetDashboardPreset()
-        }
+        SupersetAPI.loadSupersetDashboardPreset()
     }
 }
