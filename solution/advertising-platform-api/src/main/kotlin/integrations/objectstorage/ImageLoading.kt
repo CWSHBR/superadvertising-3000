@@ -1,4 +1,4 @@
-package ru.cwshbr.s3
+package ru.cwshbr.integrations.objectstorage
 
 import ru.cwshbr.utils.S3_BUCKET
 import ru.cwshbr.utils.s3Client

@@ -16,3 +16,8 @@ val S3_URL = System.getenv("S3_URL")
 val S3_ACCESS_KEY = System.getenv("S3_ACCESS_KEY")
 val S3_SECRET_KEY = System.getenv("S3_SECRET_KEY")
 val S3_BUCKET = System.getenv("S3_BUCKET")
+
+//superset
+val SUPERSET_BASE_URL = System.getenv("SUPERSET_BASE_URL")
+val SUPERSET_USERNAME = System.getenv("SUPERSET_USERNAME")
+val SUPERSET_PASSWORD = System.getenv("SUPERSET_PASSWORD")

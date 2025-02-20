@@ -93,5 +93,5 @@ val getBestAdStatement = """
         and is_age_in_upper_lim(?, ct.age_to) = 1
         and is_gender_match(?, ct.gender) = 1
     ) as subquery
-    order by score DESC, ml DESC, cpi DESC limit 1 
+    order by score DESC, cpi DESC, ml DESC
 """.trimIndent()

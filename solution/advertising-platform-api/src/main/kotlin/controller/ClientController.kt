@@ -26,7 +26,7 @@ class ClientController(val call: ApplicationCall) {
         val (success, reason) = ClientsCRUD.createOrUpdateList(clients)
 
         if (!success){
-            call.respond(HttpStatusCode.NotFound, ErrorResponse(reason.toString())) //todo do not show reason
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse(reason.toString())) //todo do not show reason
             return
         }
 

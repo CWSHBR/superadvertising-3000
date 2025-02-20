@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.cwshbr.database.tables.CampaignTargetTable
 import ru.cwshbr.database.tables.CampaignsTable
+import ru.cwshbr.database.tables.Impressions
 import ru.cwshbr.models.CampaignModel
 import ru.cwshbr.models.CampaignTarget
 import ru.cwshbr.utils.CurrentDate
@@ -109,7 +110,7 @@ object CampaignsCRUD {
         CampaignsTable.deleteWhere { id eq campaignId }
     }
 
-    fun getAd(clientId: UUID): CampaignModel? =
+    fun getAd(clientId: UUID): List<CampaignModel> =
         transaction {
             val user = ClientsCRUD.read(clientId)
 
@@ -126,7 +127,6 @@ object CampaignsCRUD {
                 .addParam(user.gender.toString())
                 .build()
 
-//            println(statement)
             val i = exec(statement) { rs ->
                 val result = arrayListOf<String>()
                 while (rs.next()) {
@@ -137,17 +137,21 @@ object CampaignsCRUD {
 
 
             if (i.isNullOrEmpty()) {
-                return@transaction null
+                return@transaction listOf()
             } else {
-                val campaignId = UUID.fromString(i.first())
+                val ids = i.map { UUID.fromString(it) }.toSet()
+                val seenIds = Impressions.select(Impressions.campaignId)
+                    .where {Impressions.clientId eq clientId}
+                    .map { it[Impressions.campaignId] }.toSet()
+
+                val getIds = (ids - seenIds).toList() //removing ad that client already seen
+
+                println("$clientId ${ids.size} ${seenIds.size} ${getIds.size}")
+
                 return@transaction (CampaignsTable innerJoin CampaignTargetTable)
                     .selectAll()
-                    .where { CampaignsTable.id eq campaignId }
-                    .singleOrNull()
-                    .let {
-                        if (it == null) null
-                        else resultRowToCampaign(it)
-                    }
+                    .where { CampaignsTable.id inList getIds }
+                    .map(::resultRowToCampaign)
             }
 
 

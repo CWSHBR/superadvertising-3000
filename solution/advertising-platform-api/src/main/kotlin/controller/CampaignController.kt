@@ -10,6 +10,7 @@ import ru.cwshbr.database.crud.CampaignsCRUD
 import ru.cwshbr.database.crud.ClientsCRUD
 import ru.cwshbr.database.crud.StatisticsCRUD
 import ru.cwshbr.models.inout.ErrorResponse
+import ru.cwshbr.models.inout.campaigns.ClickRequestModel
 import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
@@ -198,12 +199,16 @@ class CampaignController(val call: ApplicationCall) {
             return
         }
 
-        val ad = CampaignsCRUD.getAd(clientId)
+        val ads = CampaignsCRUD.getAd(clientId)
 
-        if (ad == null) {
+        if (ads.isEmpty()) {
             call.respond(HttpStatusCode.NotFound, ErrorResponse("Ad not found"))
             return
         }
+
+//        println("$clientId: ${ads.size}")
+
+        val ad = ads.first()
 
         StatisticsCRUD.createImpression(ad, clientId)
 
@@ -219,7 +224,7 @@ class CampaignController(val call: ApplicationCall) {
         }
 
         val clientId = try {
-            UUID.fromString(call.receive<ClientResponseRequestModel>().client_id)
+            UUID.fromString(call.receive<ClickRequestModel>().client_id)
         } catch (e: Exception){
             call.respond(HttpStatusCode.BadRequest, ErrorResponse("Bad client_id"))
             return

@@ -7,8 +7,8 @@ import io.ktor.server.response.*
 import ru.cwshbr.database.crud.CampaignsCRUD
 import ru.cwshbr.database.crud.ImagesCRUD
 import ru.cwshbr.models.inout.ErrorResponse
-import ru.cwshbr.s3.ImageLoading
-import ru.cwshbr.s3.ImageLoading.getImageFromS3
+import ru.cwshbr.integrations.objectstorage.ImageLoading
+import ru.cwshbr.integrations.objectstorage.ImageLoading.getImageFromS3
 import java.util.*
 
 class ImagesController(val call: ApplicationCall) {

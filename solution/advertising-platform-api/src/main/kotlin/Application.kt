@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.Database
 import ru.cwshbr.plugins.configureRabbitMQ
 import ru.cwshbr.plugins.configureRouting
 import ru.cwshbr.plugins.configureSerialization
+import ru.cwshbr.plugins.configureSuperset
 import ru.cwshbr.utils.POSTGRES_PASSWORD
 import ru.cwshbr.utils.POSTGRES_URL
 import ru.cwshbr.utils.POSTGRES_USERNAME
@@ -29,8 +30,9 @@ fun Application.module() {
     }
     DatabaseInit.initialize()
     configureSerialization()
-    configureRabbitMQ()
+//    configureRabbitMQ()
     configureRouting()
+    configureSuperset()
 }
 
 fun connect() {

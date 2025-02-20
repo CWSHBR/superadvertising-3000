@@ -27,7 +27,7 @@ class AdvertiserController(val call: ApplicationCall) {
         val (success, reason) = AdvertisersCRUD.createOrUpdateList(advertisers)
 
         if (!success) {
-            call.respond(HttpStatusCode.NotFound, ErrorResponse(reason.toString())) //TODO do not show reason
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse(reason.toString())) //TODO do not show reason
             return
         }
 
