@@ -54,6 +54,12 @@ object GetCampaignKeyboards {
                 dataInlineButton("📸 Изображение обьявления",
                     "getimage:"+campaign.toKeyboardCallbackFormat())
             ),
+            listOf(
+                dataInlineButton("\uD83D\uDCCA Статистика",
+                    "getstats:"+campaign.toKeyboardCallbackFormat()),
+                dataInlineButton("✨ Новый текст с ИИ",
+                    "gentext:"+campaign.toKeyboardCallbackFormat()),
+            ),
             backToCampaigns
         )
     )

@@ -6,10 +6,7 @@ import dev.inmo.tgbotapi.extensions.behaviour_builder.createSubContext
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onDataCallbackQuery
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onPhoto
-import ru.cwshbr.controller.CampaignCallbackController
-import ru.cwshbr.controller.CampaignController
-import ru.cwshbr.controller.CommonController
-import ru.cwshbr.controller.LoginController
+import ru.cwshbr.controller.*
 import ru.cwshbr.utils.TELEGRAM_BOT_TOKEN
 
 val bot = buildBot(TELEGRAM_BOT_TOKEN){}
@@ -23,6 +20,10 @@ suspend fun telegramRoutingInit(){
 
         onCommand("mycampaigns", requireOnlyCommandInMessage = false){
             CampaignController(it, subcontext).getCampaigns()
+        }
+
+        onCommand("stats", requireOnlyCommandInMessage = false){
+            StatisticsController(it, subcontext).showStatisticsByAdvertiser()
         }
 
         onDataCallbackQuery("getcampaign:.*") {
@@ -39,6 +40,14 @@ suspend fun telegramRoutingInit(){
 
         onDataCallbackQuery("setimage:.*") {
             CampaignCallbackController(it, subcontext).setImageThreadStart()
+        }
+
+        onDataCallbackQuery("getstats:.*") {
+            StatisticsCallbackController(it, subcontext).showStatisticsByCampaign()
+        }
+
+        onDataCallbackQuery("gentext:.*") {
+
         }
 
         onPhoto {

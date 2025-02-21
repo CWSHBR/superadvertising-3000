@@ -50,7 +50,7 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
     suspend fun getCampaignCallback() {
         if (advertiserId == null) return
 
-        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery as DataCallbackQuery, 1)
+        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery , 1)
 
         val isNoCache = MessageReceive.getStringFromCallback(callbackQuery, 2) == "nocache"
 
@@ -87,7 +87,7 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
     suspend fun getCampaignListCallback() {
         if (advertiserId == null) return
 
-        val campaigns = CampaignApi.getCampaignsList(advertiserId)
+        val campaigns = CampaignApi.getCampaignsList(advertiserId, size = 25)
 
 
         val message = callbackQuery.message as ContentMessage<TextContent>
@@ -109,7 +109,7 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
     suspend fun getCampaignImage() {
         if (advertiserId == null) return
 
-        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery as DataCallbackQuery, 1)
+        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery, 1)
 
         val isNoCache = MessageReceive.getStringFromCallback(callbackQuery, 2) == "nocache"
 
@@ -145,7 +145,7 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
     suspend fun setImageThreadStart() {
         if (advertiserId == null) return
 
-        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery as DataCallbackQuery, 1)
+        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery , 1)
 
         if (campaignId == null) {
             bc.sendTextMessage(callbackQuery.from.id,

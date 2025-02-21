@@ -11,19 +11,18 @@ import dev.inmo.tgbotapi.requests.abstracts.InputFile
 import dev.inmo.tgbotapi.types.message.MarkdownParseMode
 import dev.inmo.tgbotapi.types.message.abstracts.CommonMessage
 import dev.inmo.tgbotapi.types.message.content.PhotoMessage
-import dev.inmo.tgbotapi.types.message.content.TextMessage
 import ru.cwshbr.api.CampaignApi
 import ru.cwshbr.keyboards.GetCampaignKeyboards
 import ru.cwshbr.models.inout.ErrorMessage
 import ru.cwshbr.models.inout.SuccessMessage
 import ru.cwshbr.states.StateMachine
-import java.util.UUID
+import java.util.*
 
 class CampaignController(message: CommonMessage<*>, bc: BehaviourContext): AbstractAuthController(message, bc) {
     suspend fun getCampaigns() {
         if (advertiserId == null) return
 
-        val campaigns = CampaignApi.getCampaignsList(advertiserId)
+        val campaigns = CampaignApi.getCampaignsList(advertiserId, size = 25)
 
         if (campaigns.isEmpty()) {
             bc.reply(message, text = SuccessMessage.nothingFoundYet.toString(), parseMode = MarkdownParseMode)
