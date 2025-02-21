@@ -26,11 +26,11 @@ class ClientController(val call: ApplicationCall) {
         val (success, reason) = ClientsCRUD.createOrUpdateList(clients)
 
         if (!success){
-            call.respond(HttpStatusCode.BadRequest, ErrorResponse(reason.toString())) //todo do not show reason
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Unknown client error"))
             return
         }
 
-        call.respond(HttpStatusCode.Created, r) // TODO GET ONLY UNIQUE LAST CHANGES
+        call.respond(HttpStatusCode.Created, r)
     }
 
     suspend fun getClientById(){

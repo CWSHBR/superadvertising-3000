@@ -21,3 +21,6 @@ val S3_BUCKET = System.getenv("S3_BUCKET")
 val SUPERSET_BASE_URL = System.getenv("SUPERSET_BASE_URL")
 val SUPERSET_USERNAME = System.getenv("SUPERSET_USERNAME")
 val SUPERSET_PASSWORD = System.getenv("SUPERSET_PASSWORD")
+
+//yandex gpt
+val YANDEX_OAUTH = System.getenv("YANDEX_OAUTH")

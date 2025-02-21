@@ -13,7 +13,7 @@ object CampaignsTable: IdTable<UUID>("campaigns") {
     val costPerImpression = float("cost_per_impression")
     val costPerClick = float("cost_per_click")
     val adTitle = varchar("ad_title", 63)
-    val adText = varchar("ad_text", 255)
+    val adText = text("ad_text")
     val startDate = integer("start_date")
     val endDate = integer("end_date")
     val isActive = bool("is_active").default(true)

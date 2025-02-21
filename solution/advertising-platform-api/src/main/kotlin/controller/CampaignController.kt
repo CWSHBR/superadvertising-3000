@@ -13,7 +13,6 @@ import ru.cwshbr.models.inout.ErrorResponse
 import ru.cwshbr.models.inout.campaigns.ClickRequestModel
 import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
-import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
 import ru.cwshbr.plugins.JsonFormat
 import ru.cwshbr.utils.Moderation
 import java.util.*
@@ -85,7 +84,7 @@ class CampaignController(val call: ApplicationCall) {
         val (success, reason) = CampaignsCRUD.update(updatedModel)
 
         if (!success) {
-            call.respond(HttpStatusCode.BadRequest, ErrorResponse(reason.toString()))
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Unknown campaign error."))
             return
         }
 
@@ -134,7 +133,7 @@ class CampaignController(val call: ApplicationCall) {
 
         val r = call.receive<CreateCampaignRequestModel>()
 
-        if (!r.validate()){ //todo validate with reason
+        if (!r.validate()){
             call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid request data"))
             return
         }
@@ -150,7 +149,7 @@ class CampaignController(val call: ApplicationCall) {
         val (success, reason) = CampaignsCRUD.create(campaign)
 
         if (!success){
-            call.respond(HttpStatusCode.BadRequest, reason.toString()) // todo do not request reason
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Unknown campaign error."))
             return
         }
 
@@ -205,8 +204,6 @@ class CampaignController(val call: ApplicationCall) {
             call.respond(HttpStatusCode.NotFound, ErrorResponse("Ad not found"))
             return
         }
-
-//        println("$clientId: ${ads.size}")
 
         val ad = ads.first()
 

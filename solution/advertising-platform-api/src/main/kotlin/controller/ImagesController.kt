@@ -30,7 +30,7 @@ class ImagesController(val call: ApplicationCall) {
         val campaign = CampaignsCRUD.read(campaignId)
 
         if (campaign == null || campaign.advertiserId != advertiserId) {
-            call.respond(HttpStatusCode.NotFound, ErrorResponse("Image OR Campaign with this advertiser not found"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Campaign with this advertiser not found"))
             return
         }
 

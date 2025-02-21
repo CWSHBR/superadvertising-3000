@@ -3,11 +3,9 @@ package ru.cwshbr.plugins
 import com.rabbitmq.client.Channel
 import io.github.damir.denis.tudor.ktor.server.rabbitmq.RabbitMQ
 import io.github.damir.denis.tudor.ktor.server.rabbitmq.connection.ConnectionManager
-import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.exchangeDeclare
-import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.queueBind
-import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.queueDeclare
-import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.rabbitmq
+import io.github.damir.denis.tudor.ktor.server.rabbitmq.dsl.*
 import io.ktor.server.application.*
+import ru.cwshbr.integrations.yandexgpt.GptQueue
 import ru.cwshbr.utils.RABBITMQ_URL
 
 var rabbitMQChannel: Channel? = null
@@ -25,11 +23,11 @@ fun Application.configureRabbitMQ() {
 
     rabbitmq {
         queueBind {
-            queue = "nominatim"
+            queue = "yandexgpt"
             exchange = "exchange"
-            routingKey = "to-nominatim"
+            routingKey = "to-yandexgpt"
             queueDeclare {
-                queue = "nominatim"
+                queue = "yandexgpt"
                 durable = true
             }
             exchangeDeclare {
@@ -37,6 +35,17 @@ fun Application.configureRabbitMQ() {
                 type = "direct"
             }
         }
+
+        connection(id = "consume-llm") {
+            basicConsume {
+                autoAck = true
+                queue = "yandexgpt"
+                deliverCallback<String> { tag, message ->
+                    GptQueue.consumeLocationMessage(message)
+                }
+            }
+        }
+
 
         rabbitMQConnMan = connectionManager
         rabbitMQChannel = channel

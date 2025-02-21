@@ -42,6 +42,9 @@ fun Application.configureRouting() {
                                 ImagesController(call).setImage()
                             }
                         }
+                        post("/generatetext") {
+                            TextGenerationController(call).generateText()
+                        }
                         get {
                             CampaignController(call).getCampaignById()
                         }

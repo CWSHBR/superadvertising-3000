@@ -30,7 +30,7 @@ fun Application.module() {
     }
     DatabaseInit.initialize()
     configureSerialization()
-//    configureRabbitMQ()
+    configureRabbitMQ()
     configureRouting()
     configureSuperset()
 }

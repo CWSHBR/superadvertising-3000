@@ -27,11 +27,11 @@ class AdvertiserController(val call: ApplicationCall) {
         val (success, reason) = AdvertisersCRUD.createOrUpdateList(advertisers)
 
         if (!success) {
-            call.respond(HttpStatusCode.BadRequest, ErrorResponse(reason.toString())) //TODO do not show reason
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Unknown advertiser error"))
             return
         }
 
-        call.respond(HttpStatusCode.Created, r) // TODO GET ONLY UNIQUE LAST CHANGES
+        call.respond(HttpStatusCode.Created, r)
     }
 
     suspend fun getAdvertiser() {

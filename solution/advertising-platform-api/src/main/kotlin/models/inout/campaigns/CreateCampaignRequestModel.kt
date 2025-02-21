@@ -23,7 +23,7 @@ data class CreateCampaignRequestModel(
     fun validate(): Boolean {
         val validSet = setOf(
             Validation.validateField(ad_title, 1..63),
-            Validation.validateField(ad_text, 1..255),
+            ad_text.isNotBlank(),
             Validation.validateEnum(targeting.gender, listOf("MALE", "FEMALE", "ALL"), true),
             Validation.validateField(targeting.location, 1..128, ignoreNull = true),
             CurrentDate <= start_date,
