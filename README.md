@@ -47,14 +47,14 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
 Первичный отбор рекламных кампаний производится с помошью SQL запроса:
 
     select cid,
-       ((cpi * 1.2 + cpc * 0.7) + ml/2.3) AS score from 
+       (5*(cpi * 1.2 + cpc * 0.7) + ml/2.5) AS score from 
     (
         select campaigns.id as cid,
         ms.score as ml, campaigns.cost_per_impression as cpi, campaigns.cost_per_click as cpc from campaigns
         inner join public.campaign_target ct on campaigns.id = ct.campaign_id
         inner join (select * from unnest(?, ?) as x(id, score)) ms on ms.id = cast(advertiser_id as text)
 
-        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < (campaigns.impressions_limit * 1.05)
+        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < (campaigns.impressions_limit * 1.04)
         and campaigns.start_date <= ?
         and ? <= campaigns.end_date
         and is_within_area(?, ct.location) = 1
@@ -68,7 +68,7 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
     - в данный день активны
     - не превышен лимит показов
     - подходят данному клиенту по настройкам таргетинга 
-2) Далее по формуле `(cpi * 1.2 + cpc * 0.7) + ml/2.3` вычисляется некий _коэффицент релевантности рекламы_ по которому в дальнейшем производится сортировка по убыванию
+2) Далее по формуле `5*(cpi * 1.2 + cpc * 0.7) + ml/2.5` вычисляется некий _коэффицент релевантности рекламы_ по которому в дальнейшем производится сортировка по убыванию
 
 ### Вторичный отбор
 В вторичном отборе мы из списка кампаний убираем те кампании, чья реклама уже была показана данному клиенту.
@@ -175,7 +175,7 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
 ---
 
 ## Описание схемы данных
-![ER-диаграмма](images/advertisers.png)
+![ER-диаграмма](extra/diagram.png)
 #### Краткое описание таблиц:
 - `advertisers` - Рекламодатели
 - `clients` - Клиенты
@@ -185,6 +185,8 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
 - `images` - Таблица сопоставления названия файла картинки в хранилище к ID кампании. _(Уникальность по campaign_id)_
 - `impressions` - Просмотры рекламы. _(Записи попарно уникальны. Сохранияется цена на момент просмотра. Не удаляется при отсутсвии кампании или клиента.)_
 - `clicks` - Клик по рекламе. _(Записи попарно уникальны. Сохранияется цена на момент клика. Не удаляется при отсутсвии кампании или клиента.)_
+
+#### Более подробное описание [тут](extra/DATABASE-DESCRIPTION.md)
 
 ---
 
