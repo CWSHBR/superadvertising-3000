@@ -1,0 +1,1122 @@
+openapi: "3.1.0"
+info:
+  title: "CWSHBR API"
+  description: "CWSHBR API"
+  version: "1.0.0"
+servers:
+  - url: "https://CWSHBR"
+paths:
+  /ads:
+    get:
+      description: ""
+      parameters:
+        - name: "client_id"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad client_id"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Ad not found"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Client not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GetAdResponseModel"
+  /ads/{adId}/click:
+    post:
+      description: ""
+      parameters:
+        - name: "adId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClickRequestModel"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad client_id"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Bad adId"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Не было просмотра рекламы"
+        "429":
+          description: "Too Many Requests"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "You cannot click above the limit"
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /advertisers/bulk:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/AdvertisersRequestResponseModel"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Unknown advertiser error"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/AdvertisersRequestResponseModel"
+  /advertisers/{advertiserId}:
+    get:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad id"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Advertiser not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AdvertisersRequestResponseModel"
+  /advertisers/{advertiserId}/campaigns:
+    get:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad pagination"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Advertiser not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/GetCampaignResponseModel"
+    post:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignRequestModel"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Unknown campaign error."
+                Example#2:
+                  description: ""
+                  value:
+                    error: "В тексте содержатся запрещенные слова."
+                Example#3:
+                  description: ""
+                  value:
+                    error: "Invalid request data"
+                Example#4:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Advertiser not found"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GetCampaignResponseModel"
+  /advertisers/{advertiserId}/campaigns/{campaignId}:
+    get:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign with this advertiser not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GetCampaignResponseModel"
+    put:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Unknown campaign error."
+                Example#2:
+                  description: ""
+                  value:
+                    error: "В тексте содержатся запрещенные слова."
+                Example#3:
+                  description: ""
+                  value:
+                    error: "Bad update data"
+                Example#4:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+                Example#5:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign with this advertiser not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GetCampaignResponseModel"
+    delete:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign with this advertiser not found"
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /advertisers/{advertiserId}/campaigns/{campaignId}/generatetext:
+    post:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Something went wrong"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+                Example#3:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign with this advertiser not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Map_String"
+  /advertisers/{advertiserId}/campaigns/{campaignId}/image:
+    get:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Image does not exist"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Image OR Campaign with this advertiser not found"
+    post:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "Content-Type"
+          in: "header"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Only images is supported"
+                Example#2:
+                  description: ""
+                  value:
+                    error: "Something went wrong"
+                Example#3:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+                Example#4:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign with this advertiser not found"
+        "413":
+          description: "Payload Too Large"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Image too large. 5MB max"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /clients/bulk:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/ClientResponseRequestModel"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Unknown client error"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ClientResponseRequestModel"
+  /clients/{clientId}:
+    get:
+      description: ""
+      parameters:
+        - name: "clientId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad id"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Client not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponseRequestModel"
+  /ml-scores:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMLScoreModel"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad data"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Something wasn't found right"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /moderation:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModerationSwitchRequestModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /moderation/addrestrictedwords:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /stats/advertisers/{advertiserId}/campaigns:
+    get:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StatsResponseModel"
+  /stats/advertisers/{advertiserId}/campaigns/daily:
+    get:
+      description: ""
+      parameters:
+        - name: "advertiserId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad advertiserId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/DailyStatsResponseModel"
+  /stats/campaigns/{campaignId}:
+    get:
+      description: ""
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StatsResponseModel"
+  /stats/campaigns/{campaignId}/daily:
+    get:
+      description: ""
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Bad campaignId"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    error: "Campaign not found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/DailyStatsResponseModel"
+  /time/advance:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CurrentTimeModel"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CurrentTimeModel"
+components:
+  schemas:
+    ErrorResponse:
+      type: "object"
+      properties:
+        error:
+          type: "string"
+      required:
+        - "error"
+    GetAdResponseModel:
+      type: "object"
+      properties:
+        ad_id:
+          type: "string"
+        ad_title:
+          type: "string"
+        ad_description:
+          type: "string"
+        advertiser_id:
+          type: "string"
+      required:
+        - "ad_id"
+        - "ad_title"
+        - "ad_description"
+        - "advertiser_id"
+    ClickRequestModel:
+      type: "object"
+      properties:
+        client_id:
+          type: "string"
+      required:
+        - "client_id"
+    AdvertisersRequestResponseModel:
+      type: "object"
+      properties:
+        advertiser_id:
+          type: "string"
+        name:
+          type: "string"
+    TargetResponseModel:
+      type: "object"
+      properties:
+        gender:
+          type: "string"
+        age_from:
+          type: "integer"
+          format: "int32"
+        age_to:
+          type: "integer"
+          format: "int32"
+        location:
+          type: "string"
+    GetCampaignResponseModel:
+      type: "object"
+      properties:
+        campaign_id:
+          type: "string"
+        advertiser_id:
+          type: "string"
+        impressions_limit:
+          type: "integer"
+          format: "int32"
+        clicks_limit:
+          type: "integer"
+          format: "int32"
+        cost_per_impression:
+          type: "number"
+          format: "float"
+        cost_per_click:
+          type: "number"
+          format: "float"
+        ad_title:
+          type: "string"
+        ad_text:
+          type: "string"
+        start_date:
+          type: "integer"
+          format: "int32"
+        end_date:
+          type: "integer"
+          format: "int32"
+        targeting:
+          $ref: "#/components/schemas/TargetResponseModel"
+      required:
+        - "campaign_id"
+        - "advertiser_id"
+        - "ad_title"
+        - "ad_text"
+        - "targeting"
+    CreateCampaignRequestModel:
+      type: "object"
+      properties:
+        impressions_limit:
+          type: "integer"
+          format: "int32"
+        clicks_limit:
+          type: "integer"
+          format: "int32"
+        cost_per_impression:
+          type: "number"
+          format: "float"
+        cost_per_click:
+          type: "number"
+          format: "float"
+        ad_title:
+          type: "string"
+        ad_text:
+          type: "string"
+        start_date:
+          type: "integer"
+          format: "int32"
+        end_date:
+          type: "integer"
+          format: "int32"
+        targeting:
+          $ref: "#/components/schemas/TargetResponseModel"
+      required:
+        - "ad_title"
+        - "ad_text"
+        - "targeting"
+    Map:
+      type: "object"
+      properties: { }
+    Map_String:
+      type: "string"
+    ClientResponseRequestModel:
+      type: "object"
+      properties:
+        client_id:
+          type: "string"
+        login:
+          type: "string"
+        age:
+          type: "integer"
+          format: "int32"
+        location:
+          type: "string"
+        gender:
+          type: "string"
+    UpdateMLScoreModel:
+      type: "object"
+      properties:
+        client_id:
+          type: "string"
+        advertiser_id:
+          type: "string"
+        score:
+          type: "integer"
+          format: "int32"
+    ModerationSwitchRequestModel:
+      type: "object"
+      properties:
+        turn_on:
+          type: "boolean"
+    StatsResponseModel:
+      type: "object"
+      properties:
+        impressions_count:
+          type: "integer"
+          format: "int32"
+        click_count:
+          type: "integer"
+          format: "int32"
+        conversion:
+          type: "number"
+          format: "float"
+        spent_impressions:
+          type: "number"
+          format: "float"
+        spent_clicks:
+          type: "number"
+          format: "float"
+        spent_total:
+          type: "number"
+          format: "float"
+    DailyStatsResponseModel:
+      type: "object"
+      properties:
+        impressions_count:
+          type: "integer"
+          format: "int32"
+        click_count:
+          type: "integer"
+          format: "int32"
+        conversion:
+          type: "number"
+          format: "float"
+        spent_impressions:
+          type: "number"
+          format: "float"
+        spent_clicks:
+          type: "number"
+          format: "float"
+        spent_total:
+          type: "number"
+          format: "float"
+        date:
+          type: "integer"
+          format: "int32"
+    CurrentTimeModel:
+      type: "object"
+      properties:
+        current_date:
+          type: "integer"
+          format: "int32"
