@@ -78,7 +78,7 @@ val createFunctionsStatement = """
 
 val getBestAdStatement = """ 
     select cid,
-       ((cpi * 1.2 + cpc * 0.7) + ml/2.3) AS score from 
+       ((cpi * 1.2 + cpc * 0.7) + ml/2.3) AS s_score from 
     (
         select campaigns.id as cid,
         ms.score as ml, campaigns.cost_per_impression as cpi, campaigns.cost_per_click as cpc from campaigns
@@ -93,5 +93,5 @@ val getBestAdStatement = """
         and is_age_in_upper_lim(?, ct.age_to) = 1
         and is_gender_match(?, ct.gender) = 1
     ) as subquery
-    order by score DESC, cpi DESC, cpc DESC, ml DESC
+    order by s_score DESC, cpi DESC, cpc DESC, ml DESC
 """.trimIndent()
