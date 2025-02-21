@@ -45,7 +45,7 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
 ## Алгоритм подбора рекламы
 ### Первичный отбор
 Первичный отбор рекламных кампаний производится с помошью SQL запроса:
-
+```sql
     select cid,
        (5*(cpi * 1.2 + cpc * 0.7) + ml/2.5) AS score from 
     (
@@ -54,7 +54,7 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
         inner join public.campaign_target ct on campaigns.id = ct.campaign_id
         inner join (select * from unnest(?, ?) as x(id, score)) ms on ms.id = cast(advertiser_id as text)
 
-        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < (campaigns.impressions_limit * 1.04)
+        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < campaigns.impressions_limit 
         and campaigns.start_date <= ?
         and ? <= campaigns.end_date
         and is_within_area(?, ct.location) = 1
@@ -63,7 +63,7 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
         and is_gender_match(?, ct.gender) = 1
     ) as subquery
     order by score DESC, cpi DESC, cpc DESC, ml DESC
-
+```
 1) Отбираются кампании, которые: 
     - в данный день активны
     - не превышен лимит показов

@@ -19,4 +19,4 @@ WORKDIR /app
 COPY --from=build /workspace/app/build/libs/telegram-bot-1.0-SNAPSHOT.jar ./app.jar
 COPY --from=build /workspace/app/build/libs/libraries ./libraries
 
-CMD ["java", "-cp", "libraries/*:app.jar", "ru.cwshbr.ApplicationKt"]
+CMD ["java", "-cp", "libraries/*:app.jar", "ru.cwshbr.MainKt"]

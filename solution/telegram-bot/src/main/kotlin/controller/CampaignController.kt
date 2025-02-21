@@ -61,6 +61,8 @@ class CampaignController(message: CommonMessage<*>, bc: BehaviourContext): Abstr
 
             CampaignApi.setImage(advertiserId, campaignId, imageByteArray)
 
+            StateMachine.removeStatus(message.from!!.id.chatId.long)
+
             bc.sendPhoto(message.from!!.id, InputFile.fromId(fileId),
                 text = SuccessMessage.pictureSaved.toString(),
                 parseMode = MarkdownParseMode,
