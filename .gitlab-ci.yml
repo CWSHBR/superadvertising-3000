@@ -31,7 +31,8 @@ test:
   script:
     - docker run -v $CI_PROJECT_DIR:/app/result --network host gitlab.prodcontest.ru:5050/2025-final-indiv-repos/backend-checker:v1.2
   after_script:
-    - cd solution && docker compose down
+    - cd solution && docker compose logs > ../compose.log && docker compose down
   artifacts:
     paths:
       - total_stats.json
+      - compose.log
