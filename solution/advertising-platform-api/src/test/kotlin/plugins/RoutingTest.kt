@@ -10,6 +10,7 @@ import ru.cwshbr.models.inout.advertisers.AdvertisersRequestResponseModel
 import ru.cwshbr.models.inout.campaigns.CreateCampaignRequestModel
 import ru.cwshbr.models.inout.campaigns.GetCampaignResponseModel
 import ru.cwshbr.models.inout.campaigns.TargetResponseModel
+import ru.cwshbr.models.inout.campaigns.UpdateCampaignRequestModel
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
 import ru.cwshbr.models.inout.time.CurrentTimeModel
 import ru.cwshbr.module
@@ -268,66 +269,144 @@ class RoutingTest {
     }
 
 
-//    @Test
-//    fun putAndDeleteCampaignTest() = testApplication {
-//        application {
-//            module()
-//        }
-//
-//        var endpoint = "/advertisers/bulk"
-//        val adv = advs.random()
-//
-//        val res = client.post(endpoint){
-//            contentType(ContentType.Application.Json)
-//            setBody(JsonFormat.encodeToString(listOf(adv)))
-//        }
-//
-//        assertEquals(HttpStatusCode.Created, res.status)
-//
-//        endpoint = "/advertisers/${adv.advertiser_id}/campaigns/"
-//
-//        val imlim = (2..8).random()
-//        val cllim = imlim - (imlim * Random.nextFloat()).toInt()
-//
-//        val imCost = Random.nextFloat()/2f
-//        val clCost = imCost * (1 + Random.nextFloat()) * 3
-//
-//        val startdate = (2..6).random()
-//        val enddate = startdate + (2..6).random()
-//
-//        val agefrom = agesForCampaigns.random()
-//        var ageto = agesForCampaigns.random()
-//
-//        if (agefrom != null && ageto != null) ageto += agefrom
-//
-//        val campaignCreate = CreateCampaignRequestModel(
-//            imlim,
-//            cllim,
-//            imCost,
-//            clCost,
-//            randomString(18),
-//            randomString(60),
-//            startdate,
-//            enddate,
-//            TargetResponseModel(
-//                gendersForCampaign.random(),
-//                agefrom,
-//                ageto,
-//                locationsForCampaign.random()
-//            )
-//        )
-//
-//        var r = client.post(endpoint){
-//            contentType(ContentType.Application.Json)
-//            setBody(JsonFormat.encodeToString(campaignCreate))
-//        }
-//
-//        assertEquals(HttpStatusCode.Created, r.status)
-//
-//        val campaignGet = JsonFormat.decodeFromString<GetCampaignResponseModel>(r.bodyAsText())
-//
-//
-//    }
+    @Test
+    fun putAndDeleteCampaignTest() = testApplication {
+        application {
+            module()
+        }
+
+        var endpoint = "/advertisers/bulk"
+        val adv = advs.random()
+
+        val res = client.post(endpoint){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(listOf(adv)))
+        }
+
+        assertEquals(HttpStatusCode.Created, res.status)
+
+        endpoint = "/advertisers/${adv.advertiser_id}/campaigns"
+
+        val imlim = (2..8).random()
+        val cllim = imlim - (imlim * Random.nextFloat()).toInt()
+
+        val imCost = Random.nextFloat()/2f
+        val clCost = imCost * (1 + Random.nextFloat()) * 3
+
+        val startdate = (2..6).random()
+        val enddate = startdate + (2..6).random()
+
+        val agefrom = agesForCampaigns.random()
+        var ageto = agesForCampaigns.random()
+
+        if (agefrom != null && ageto != null) ageto += agefrom
+
+        val campaignCreate = CreateCampaignRequestModel(
+            imlim,
+            cllim,
+            imCost,
+            clCost,
+            randomString(18),
+            randomString(60),
+            startdate,
+            enddate,
+            TargetResponseModel(
+                gendersForCampaign.random(),
+                agefrom,
+                ageto,
+                locationsForCampaign.random()
+            )
+        )
+
+        println("asdasd")
+
+        var r = client.post(endpoint){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(campaignCreate))
+        }
+
+        assertEquals(HttpStatusCode.Created, r.status)
+
+
+        println("asdasd")
+
+        val campaignGet = JsonFormat.decodeFromString<GetCampaignResponseModel>(r.bodyAsText())
+
+        //testing put
+        r = client.put("$endpoint/00000000-0000-0000-0000-000000000000"){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(UpdateCampaignRequestModel(
+                ad_text = "asdasd"
+            )))
+        }
+
+        assertEquals(HttpStatusCode.NotFound, r.status)
+
+
+        endpoint += "/${campaignGet.campaign_id}"
+
+        CurrentDate = (campaignGet.start_date + campaignGet.end_date)/ 2
+
+        println("asdasd")
+
+        r = client.put(endpoint){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(
+                UpdateCampaignRequestModel(
+                    impressions_limit = 10
+                )
+            ))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, r.status)
+
+
+        r = client.put(endpoint){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(
+                UpdateCampaignRequestModel(
+                    start_date = CurrentDate - 1
+                )
+            ))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, r.status)
+
+
+        r = client.put(endpoint){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(
+                UpdateCampaignRequestModel(
+                    ad_title = randomString(64)
+                )
+            ))
+        }
+
+        assertEquals(HttpStatusCode.BadRequest, r.status)
+
+        r = client.put(endpoint){
+            contentType(ContentType.Application.Json)
+            setBody(JsonFormat.encodeToString(
+                UpdateCampaignRequestModel(
+                    ad_text = "adasd"
+                )
+            ))
+        }
+
+        assertEquals(HttpStatusCode.OK, r.status)
+
+        //testing delete
+        r = client.delete("/advertisers/${adv.advertiser_id}/campaigns/00000000-0000-0000-0000-000000000000")
+
+        assertEquals(HttpStatusCode.NotFound, r.status)
+
+        r = client.delete(endpoint)
+
+        assertEquals(HttpStatusCode.NoContent, r.status)
+
+        r = client.get(endpoint)
+        assertEquals(HttpStatusCode.NotFound, r.status)
+    }
 
 
 }

@@ -1,6 +1,5 @@
 package plugins
 
-import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -10,19 +9,16 @@ import ru.cwshbr.models.inout.advertisers.AdvertisersRequestResponseModel
 import ru.cwshbr.models.inout.advertisers.UpdateMLScoreModel
 import ru.cwshbr.models.inout.campaigns.*
 import ru.cwshbr.models.inout.clients.ClientResponseRequestModel
-import ru.cwshbr.models.inout.time.CurrentTimeModel
 import ru.cwshbr.module
 import ru.cwshbr.plugins.JsonFormat
 import ru.cwshbr.utils.CurrentDate
 import java.util.*
-import kotlin.collections.List
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class GetAdsTest {
-
     val locations = listOf("москва", "казань", "набережные челны", "самара", "сочи", "елабуга")
     val ages = 5..50
     val genders = listOf("MALE", "FEMALE")
