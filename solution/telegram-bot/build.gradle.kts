@@ -15,7 +15,7 @@ repositories {
 }
 
 application {
-    mainClass.set("ru.cwshbr.ApplicationKt")
+    mainClass.set("ru.cwshbr.MainKt")
 }
 
 dependencies {

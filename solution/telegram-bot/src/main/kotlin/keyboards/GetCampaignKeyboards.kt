@@ -40,7 +40,7 @@ object GetCampaignKeyboards {
     fun getCampaignImage(campaignId: String) = InlineKeyboardMarkup (
         keyboard = listOf(
             listOf(
-                dataInlineButton("\uD83D\uDD04\uD83D\uDDBC\uFE0F Обновить картинку", "updatepic:$campaignId")
+                dataInlineButton("\uD83D\uDD04\uD83D\uDDBC\uFE0F Изменить картинку", "setimage:$campaignId")
             ),
             backToCampaignGen("$campaignId:recreatemessage")
         )

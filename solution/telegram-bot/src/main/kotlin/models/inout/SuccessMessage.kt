@@ -8,6 +8,9 @@ data class SuccessMessage(
         val successfulLogin = SuccessMessage("Успешный вход.")
         val nothingFoundYet = SuccessMessage("Тут пока что ничего нет... *Создайте!*", "\uD83E\uDD37")
         val yourCampaigns = SuccessMessage("Ваши рекламные кампании:", "🔍")
+        val sendPicture = SuccessMessage("Отправьте изображение для вашей рекламы.",
+            "\uD83D\uDCE4\uD83D\uDDBC\uFE0F")
+        val pictureSaved = SuccessMessage("Изображение сохранено успешно!")
     }
 
     operator fun plus(other: String): SuccessMessage {

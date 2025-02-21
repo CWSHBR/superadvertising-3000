@@ -17,8 +17,11 @@ import dev.inmo.tgbotapi.types.queries.callback.DataCallbackQuery
 import kotlinx.io.Buffer
 import ru.cwshbr.api.CampaignApi
 import ru.cwshbr.keyboards.GetCampaignKeyboards
+import ru.cwshbr.models.StatusData
+import ru.cwshbr.models.enums.StatusWaitForType
 import ru.cwshbr.models.inout.ErrorMessage
 import ru.cwshbr.models.inout.SuccessMessage
+import ru.cwshbr.states.StateMachine
 import ru.cwshbr.utils.MessageReceive
 import java.time.LocalDateTime
 
@@ -27,16 +30,18 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
 
         private suspend fun updateOrCreate(text: String,
                                            replyMarkup: InlineKeyboardMarkup?,
-                                           reCreateMessage: Boolean = false){
+                                           reCreateMessage: Boolean = false): Long{
             val chatId = callbackQuery.message!!.chat as Chat
             val messageId = callbackQuery.message!!.messageId
             if (reCreateMessage) {
-                bc.sendMessage(chatId, text = text, replyMarkup = replyMarkup,
+                val m = bc.sendMessage(chatId, text = text, replyMarkup = replyMarkup,
                     parseMode = MarkdownParseMode)
                 bc.delete(chatId, messageId)
+                return m.messageId.long
             } else {
                 bc.editMessageText(chatId, messageId, text, replyMarkup = replyMarkup,
                     parseMode = MarkdownParseMode)
+                return messageId.long
             }
 
         }
@@ -121,7 +126,7 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
 
         if (image == null) {
             bc.editMessageText(message, text = SuccessMessage.nothingFoundYet.toString(),
-                replyMarkup = GetCampaignKeyboards.backToCampaignId(campaignId.toString()),
+                replyMarkup = GetCampaignKeyboards.getCampaignImage(campaignId.toString()),
                 parseMode = MarkdownParseMode)
             return
         }
@@ -136,4 +141,32 @@ class CampaignCallbackController(callbackQuery: DataCallbackQuery, bc: Behaviour
             replyMarkup = GetCampaignKeyboards.getCampaignImage(campaignId.toString()))
         bc.delete(chatId, messageId)
     }
+
+    suspend fun setImageThreadStart() {
+        if (advertiserId == null) return
+
+        val campaignId = MessageReceive.getUUIDFromCallback(callbackQuery as DataCallbackQuery, 1)
+
+        if (campaignId == null) {
+            bc.sendTextMessage(callbackQuery.from.id,
+                text = ErrorMessage.UnknownError.toString(),
+                parseMode = MarkdownParseMode)
+            return
+        }
+
+
+        val id = updateOrCreate(SuccessMessage.sendPicture.toString(),
+            null,
+            true)
+
+        StateMachine.setStatus(
+            callbackQuery.from.id.chatId.long, StatusData(
+                id,
+                StatusWaitForType.Image,
+                "campaign",
+                mutableListOf(campaignId.toString())
+            ))
+    }
+
+
 }

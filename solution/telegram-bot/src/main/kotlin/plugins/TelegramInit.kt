@@ -5,8 +5,10 @@ import dev.inmo.tgbotapi.extensions.behaviour_builder.buildBehaviourWithLongPoll
 import dev.inmo.tgbotapi.extensions.behaviour_builder.createSubContext
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onDataCallbackQuery
+import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onPhoto
 import ru.cwshbr.controller.CampaignCallbackController
 import ru.cwshbr.controller.CampaignController
+import ru.cwshbr.controller.CommonController
 import ru.cwshbr.controller.LoginController
 import ru.cwshbr.utils.TELEGRAM_BOT_TOKEN
 
@@ -35,7 +37,13 @@ suspend fun telegramRoutingInit(){
             CampaignCallbackController(it, subcontext).getCampaignImage()
         }
 
+        onDataCallbackQuery("setimage:.*") {
+            CampaignCallbackController(it, subcontext).setImageThreadStart()
+        }
 
+        onPhoto {
+            CommonController(it, subcontext).onPictureSent()
+        }
 
 
     }.join()
