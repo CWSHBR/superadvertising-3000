@@ -14,6 +14,9 @@ val bot = buildBot(TELEGRAM_BOT_TOKEN){}
 suspend fun telegramRoutingInit(){
     bot.buildBehaviourWithLongPolling {
         val subcontext = createSubContext()
+        onCommand("start", requireOnlyCommandInMessage = false) {
+            StartMessageController(it, subcontext).getStartMessage()
+        }
         onCommand("login", requireOnlyCommandInMessage = false){
             LoginController(it, subcontext).login()
         }
@@ -47,6 +50,7 @@ suspend fun telegramRoutingInit(){
         }
 
         onDataCallbackQuery("gentext:.*") {
+            GenerateTextCallbackController(it, subcontext).generateText()
 
         }
 

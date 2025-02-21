@@ -11,6 +11,7 @@ data class SuccessMessage(
         val sendPicture = SuccessMessage("Отправьте изображение для вашей рекламы.",
             "\uD83D\uDCE4\uD83D\uDDBC\uFE0F")
         val pictureSaved = SuccessMessage("Изображение сохранено успешно!")
+        val aiSuccess = SuccessMessage("Запрос на генерацию отправлен успешно.\nПодождите немного и обновите страницу с рекламной кампанией!", "✨☑️")
     }
 
     operator fun plus(other: String): SuccessMessage {
