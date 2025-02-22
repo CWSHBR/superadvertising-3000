@@ -54,7 +54,7 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
         inner join public.campaign_target ct on campaigns.id = ct.campaign_id
         inner join (select * from unnest(?, ?) as x(id, score)) ms on ms.id = cast(advertiser_id as text)
 
-        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < campaigns.impressions_limit 
+        where (select count(*) from impressions where impressions.campaign_id = campaigns.id) < (campaigns.impressions_limit * 1.04)
         and campaigns.start_date <= ?
         and ? <= campaigns.end_date
         and is_within_area(?, ct.location) = 1
@@ -87,6 +87,8 @@ Telegram bot - отвечает в [Телеграме](https://t.me/advertizerp
 - `/login {advertiserId}` - некий _вход в систему_ под ID рекламодателя
 - `/mycampaigns` - вывод списка кампаний рекламодателя
 - `/stats` - статистика для рекламодателя за все время
+
+Сценарии и логику бота можно найти в [файле](solution/extradocs/TELEGRAM-BOT.md)
 
 Интерфейс интуитивно понятный, сложностей у пользователя возникать не должно
 
