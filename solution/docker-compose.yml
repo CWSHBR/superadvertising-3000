@@ -1,0 +1,159 @@
+x-superset-image: &superset-image apachesuperset.docker.scarf.sh/apache/superset:${TAG:-latest-dev}
+x-superset-volumes:
+  &superset-volumes # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
+  - ./docker:/app/docker
+  - superset_home:/app/superset_home
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: "rmuser"
+      RABBITMQ_DEFAULT_PASS: "rmpassword"
+
+  minio:
+    image: docker.io/bitnami/minio:2025
+    environment:
+      MINIO_DEFAULT_BUCKETS: "bucket"
+    volumes:
+      - 'minio_data:/bitnami/minio/data'
+
+  redis:
+    image: redis:7
+    container_name: superset_cache
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+  db:
+    env_file:
+      - docker/.env
+    image: postgres:15
+    container_name: superset_db
+    hostname: db
+    restart: unless-stopped
+    volumes:
+      - db_home:/var/lib/postgresql/data
+
+  superset:
+    env_file:
+      - docker/.env
+    image: *superset-image
+    container_name: superset_app
+    command: 'sh -c "chmod +x /app/docker/*.sh && /app/docker/docker-bootstrap.sh app-gunicorn"'
+    user: "root"
+    restart: unless-stopped
+    ports:
+      - 8088:8088
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    volumes: *superset-volumes
+    environment:
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+
+  superset-init:
+    image: *superset-image
+    container_name: superset_init
+
+    command:  'sh -c "chmod +x /app/docker/*.sh && /app/docker/docker-init.sh"'
+    env_file:
+      - docker/.env
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+    user: "root"
+    volumes: *superset-volumes
+    environment:
+      SUPERSET_LOAD_EXAMPLES: "no"
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+
+  superset-worker:
+    image: *superset-image
+    container_name: superset_worker
+    command: 'sh -c "chmod +x /app/docker/*.sh && /app/docker/docker-bootstrap.sh worker"'
+    env_file:
+      - docker/.env
+    restart: unless-stopped
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    user: "root"
+    volumes: *superset-volumes
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME",
+        ]
+    environment:
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+
+  superset-worker-beat:
+    image: *superset-image
+    container_name: superset_worker_beat
+    command: 'sh -c "chmod +x /app/docker/*.sh && /app/docker/docker-bootstrap.sh beat"'
+    env_file:
+      - docker/.env
+    restart: unless-stopped
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    user: "root"
+    volumes: *superset-volumes
+    environment:
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+
+  advertising:
+    depends_on:
+      superset:
+        condition: service_healthy
+      db:
+        condition: service_started
+      minio:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    container_name: advertising
+    build:
+      advertising-platform-api
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: "jdbc:postgresql://db/superset"
+      POSTGRES_USERNAME: "superset"
+      POSTGRES_PASSWORD: "superset"
+      RABBITMQ_URL: "amqp://rmuser:rmpassword@rabbitmq"
+      S3_ACCESS_KEY: "minio"
+      S3_BUCKET: "bucket"
+      S3_SECRET_KEY: "miniosecret"
+      S3_URL: "http://minio:9000"
+      SUPERSET_BASE_URL: "http://superset:8088/api/v1"
+      SUPERSET_USERNAME: "admin"
+      SUPERSET_PASSWORD: "admin"
+      YANDEX_OAUTH: "OAUTH-TOKEN"
+
+  tgbot:
+    depends_on:
+      - advertising
+    container_name: telegrambot
+    build:
+      telegram-bot
+    environment:
+      TELEGRAM_BOT_TOKEN: "TGBOT-TOKEN"
+      BASE_URL: "http://advertising:8080"
+
+
+
+volumes:
+  minio_data:
+    driver: local
+  superset_home:
+    external: false
+  db_home:
+    external: false
+  redis:
+    external: false
